@@ -1,22 +1,22 @@
-const { random } = require("./utils")
+const {random} = require('./utils');
 
 const generate = (techs, result) => {
-  for (tech in techs) {
-    if (tech !== 'Name') {
-      let value = random(techs[tech]);
-      
-      if (typeof value !== 'string') {
-        result[tech] = {Name: value.Name, Tick: "untick"}
+	for (const tech in techs) {
+		if (Object.prototype.hasOwnProperty.call(techs, tech) && tech !== 'Name') {
+			const value = random(techs[tech]);
 
-        result = generate(value, result)
-      } else {
-        result[tech] = {Name: value, Tick: "untick"}
-      }
-    }
-  }
+			if (typeof value === 'string') {
+				result[tech] = {Name: value, Tick: 'untick'};
+			} else {
+				result[tech] = {Name: value.Name, Tick: 'untick'};
 
-  return result
-}
+				result = generate(value, result);
+			}
+		}
+	}
 
-exports.generate = generate
+	return result;
+};
+
+exports.generate = generate;
 

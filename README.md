@@ -1,6 +1,12 @@
 # Stack Idea
 
+[![Build Status](https://travis-ci.org/Nguyen-Hoang-Nam/stack-idea.svg?branch=master)](https://travis-ci.org/Nguyen-Hoang-Nam/stack-idea)
+[![Coverage Status](https://coveralls.io/repos/github/Nguyen-Hoang-Nam/stack-idea/badge.svg)](https://coveralls.io/github/Nguyen-Hoang-Nam/stack-idea)
+[![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/xojs/xo)
+
 Generate stack for your whole new idea.
+
+![screenshot](./screenshot.png)
 
 ## Prerequisite
 
@@ -24,8 +30,13 @@ $ stack --help
   Options
     -h, --help        Show help
     -v, --version     Show version
-    -g, --generate    Generate stack base on stack-config.json and store in stack.json
+    -g, --generate    Generate stack base on [stack-config.json](./stack-config.json) and store in stack.json
     -s, --show        Show stack from stack.json
+		-a, --all					Show all tech even remove one
+		-t, --tick				Tick after setup tech successful
+		-u, --untick			Untick when setup are not done yet
+		-r, --remove			Remove tech that not use
+		-G, --global			Use file stack.json in global
 
   Examples
     $ stack --generate --show

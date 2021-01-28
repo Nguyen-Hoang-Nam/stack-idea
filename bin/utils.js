@@ -1,47 +1,57 @@
 const symbols = {
-  tick: {
-    linux: '✔',
-    window: '√'
-  },
-  checkbox: {
-    linux: '☐',
-    window: '[ ]'
-  },
-  cross: {
-    linux: '✖',
-    window: '×'
-  }
-}
-
-exports.random = (tech) => {
-  const len = tech.length;
-  const position = Math.floor(Math.random() * len);
-  return tech[position];
+	tick: {
+		linux: '✔',
+		window: '√'
+	},
+	checkbox: {
+		linux: '☐',
+		window: '[ ]'
+	},
+	cross: {
+		linux: '✖',
+		window: '×'
+	}
 };
 
-const print = (tech, value) =>
-  console.log(`\x1b[32m${tech}:\x1b[0m ${value}`);
+exports.random = tech => {
+	const length = tech.length;
+	const position = Math.floor(Math.random() * length);
+	return tech[position];
+};
 
-exports.printAll = results => {
-  for(tech in results) {
-    print(tech, results[tech].Name)
-  }
-}
+const symbol = name => {
+	return process.platform === 'win32' ? symbols[name].window : symbols[name].linux;
+};
 
-const symbol = (name) => {
-  if (process.platform === 'win32') {
-    return symbols[name].window 
-  } else {
-    return symbols[name].linux
-  }
-}
+exports.tick = check => {
+	if (check === 'untick') {
+		return symbol('checkbox');
+	}
 
-exports.tick = (check) => {
-  if (check === 'untick') {
-    return symbol("checkbox")
-  } else if (check === 'tick') {
-    return symbol("tick")
-  } else if (check === 'remove') {
-    return symbol("cross")
-  }
-}
+	if (check === 'tick') {
+		return symbol('tick');
+	}
+
+	if (check === 'remove') {
+		return symbol('cross');
+	}
+};
+
+exports.tickOneOrMany = (mark, result, value) => {
+	if (typeof mark === 'string') {
+		if (Object.prototype.hasOwnProperty.call(result, mark)) {
+			result[mark].Tick = value;
+		}
+	} else if (typeof mark === 'object') {
+		mark.forEach(tech => {
+			if (Object.prototype.hasOwnProperty.call(result, tech)) {
+				result[tech].Tick = value;
+			}
+		});
+	}
+
+	return result;
+};
+
+exports.helpCommand = (alias, mean, pad) => console.log(' ', alias.padEnd(pad), mean);
+
