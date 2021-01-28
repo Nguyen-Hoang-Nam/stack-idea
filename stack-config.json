@@ -1,0 +1,61 @@
+{
+  "Render": [
+    {
+      "Name": "Server-Side"
+    },
+    {
+      "Name": "Client-Side",
+      "API": [
+        {
+          "Name": "REST"
+        },
+        {
+          "Name": "GraphQL",
+          "Framework": ["None", "Relay", "Apollo"]
+        }
+      ]
+    }
+  ],
+  "JS Framework": [
+    {
+      "Name": "React",
+      "State Management": ["Hooks", "Redux"]
+    },
+    {
+      "Name": "Angular",
+      "State Management": ["None", "RxJS", "NgRx"]
+    },
+    {
+      "Name": "Vue",
+      "State Management": ["None", "Vuex"]
+    },
+    {
+      "Name": "Svelte",
+      "State Management": ["None"]
+    }
+  ],
+  "JS  Preprocessor": ["None", "Typescript"],
+  "CSS Framework": ["None", "Material UI", "Tailwind CSS"],
+  "CSS Preprocessor": ["None", "SCSS", "Stylus"],
+  "Modern CSS": ["None", "Styled Component", "CSS Modules", "Emotion"],
+  "Test": ["None", "Jest", "Cypress", "Enzyme"],
+  "Wasm": ["None", "Rust", "Go", "C++"],
+  "Back-End": ["Node", "Python", "Go"],
+  "Database": [
+    "Oracle",
+    "MySQL",
+    "PostgreSQL",
+    "MongoDB",
+    "Cassandra",
+    "MariaDB",
+    "Teradata",
+    "Hive",
+    "Neo4j"
+  ],
+  "Cache": ["Redis", "Memcached", "Hazelcast"],
+  "Search": ["Elasticsearch", "Splunk", "Solr"],
+  "Message Broker": ["None", "RabbitMQ", "Kafka"],
+  "Network": ["HTTP", "HTTPS", "HTTP2"],
+  "Server": ["Ubuntu", "Debian", "Alphine"],
+  "Web Server": ["Nginx", "Apache", "Caddy"]
+}

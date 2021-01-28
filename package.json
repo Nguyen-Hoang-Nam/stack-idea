@@ -1,0 +1,18 @@
+{
+  "name": "stack-idea",
+  "version": "1.0.0",
+  "description": "Generate stack for your whole new idea",
+  "main": "bin/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Nguyen Hoang Nam",
+  "license": "MIT",
+  "bin": {
+    "stack": "./bin/index.js"
+  },
+  "dependencies": {
+    "minimist": "^1.2.5"
+  }
+}
