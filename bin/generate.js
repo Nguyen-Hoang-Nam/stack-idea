@@ -6,11 +6,11 @@ const generate = (techs, result) => {
       let value = random(techs[tech]);
       
       if (typeof value !== 'string') {
-        result[tech] = value.Name
+        result[tech] = {Name: value.Name, Tick: "untick"}
 
         result = generate(value, result)
       } else {
-        result[tech] = value
+        result[tech] = {Name: value, Tick: "untick"}
       }
     }
   }

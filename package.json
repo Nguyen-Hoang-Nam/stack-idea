@@ -13,6 +13,7 @@
     "stack": "./bin/index.js"
   },
   "dependencies": {
+    "cli-table": "^0.3.4",
     "minimist": "^1.2.5"
   }
 }
