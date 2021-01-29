@@ -5,6 +5,7 @@ const minimist = require('minimist');
 const chalk = require('chalk');
 const yaml = require('js-yaml');
 
+const version = require('./version');
 const {generate} = require('./generate');
 const {tickAll, checkAllTick, help, showTable} = require('./utils');
 const {minimistConfig} = require('./config');
@@ -67,7 +68,7 @@ if (args.generate) {
 		}
 	});
 } else if (args.version) {
-	console.log('1.2.0');
+	console.log(version);
 } else {
 	if (!args.help) {
 		console.log(chalk.yellow('\nMake sure you use right options list below:'));
