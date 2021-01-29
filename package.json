@@ -1,23 +1,27 @@
 {
   "name": "stack-idea",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Generate stack for your whole new idea",
   "main": "bin/index.js",
-  "scripts": {
-    "test": "xo && ava"
-  },
   "author": {
-    "name": "Nguyen Hoang Nam",
+		"name": "Nguyen Hoang Nam",
     "email": "nguyenhoangnam.dev@gmail.com"
   },
   "homepage": "https://github.com/Nguyen-Hoang-Nam/stack-idea",
   "bugs": "https://github.com/Nguyen-Hoang-Nam/stack-idea/issues",
   "keywords": [
-    "cli-app",
+		"cli-app",
     "nodejs",
     "js"
   ],
-  "license": "MIT",
+	"license": "MIT",
+	"private": false,
+	"scripts": {
+		"test": "xo && ava",
+		"postinstall": "husky install",
+		"prepublishOnly": "pinst --disable",
+		"postpublish": "pinst --enable"
+	},
   "bin": {
     "stack": "./bin/index.js"
   },
@@ -28,11 +32,14 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "cli-table": "^0.3.4",
+    "js-yaml": "^4.0.0",
     "minimist": "^1.2.5"
   },
   "devDependencies": {
     "ava": "^3.15.0",
     "coveralls": "^3.1.0",
+    "husky": "^5.0.8",
+    "pinst": "^2.1.4",
     "strip-ansi": "^6.0.0",
     "xo": "^0.37.1"
   },

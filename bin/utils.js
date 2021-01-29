@@ -59,6 +59,26 @@ const tickOneOrMany = (mark, result, value) => {
 	return result;
 };
 
+const checkTick = (mark, result) => {
+	if (typeof mark === 'string') {
+		if (Object.prototype.hasOwnProperty.call(result, mark)) {
+			return true;
+		}
+	} else if (typeof mark === 'object') {
+		mark.forEach(tech => {
+			if (Object.prototype.hasOwnProperty.call(result, tech)) {
+				return true;
+			}
+		});
+	}
+
+	return false;
+};
+
+exports.checkAllTick = (result, ticks, unticks, removes) => {
+	return checkTick(ticks, result) || checkTick(unticks, result) || checkTick(removes, result);
+};
+
 exports.tickAll = (result, ticks, unticks, removes) => {
 	result = tickOneOrMany(ticks, result, 'tick');
 	result = tickOneOrMany(unticks, result, 'untick');

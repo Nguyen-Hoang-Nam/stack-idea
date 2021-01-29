@@ -10,7 +10,8 @@ exports.minimistConfig = {
 		t: 'tick',
 		u: 'untick',
 		r: 'remove',
-		G: 'global'
+		G: 'global',
+		y: 'yaml'
 	}
 };
 

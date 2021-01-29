@@ -1,87 +1,73 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const path = require('path');
 const minimist = require('minimist');
 const chalk = require('chalk');
-const {generate} = require('./generate');
-const {tickAll, help, showTable} = require('./utils');
-const {minimistConfig} = require('./config');
+const yaml = require('js-yaml');
 
-const defaultStackConfig = path.join(__dirname, '..', 'stack-config.json');
-const stackConfig = './stack-config.json';
-const defaultStack = path.join(__dirname, '..', 'stack.json');
-const stackPath = './stack.json';
+const {generate} = require('./generate');
+const {tickAll, checkAllTick, help, showTable} = require('./utils');
+const {minimistConfig} = require('./config');
+const {defaultStack, defaultStackConfig, stackConfig, stackPath, stackConfigYaml, stackPathYaml} = require('./path.js');
 
 const args = minimist(process.argv.slice(2), minimistConfig);
 
 if (args.generate) {
-	let stackConfigPath = stackConfig;
+	let stackConfigPath = args.yaml ? stackConfigYaml : stackConfig;
 
 	fs.access(stackConfigPath, fs.F_OK, error => {
 		if (error) {
 			stackConfigPath = defaultStackConfig;
 		}
 
-		fs.readFile(stackConfigPath, (error, buffer) => {
-			if (error) {
-				console.log(error);
-			} else {
-				const techs = JSON.parse(buffer.toString());
-				const result = generate(techs, {});
+		const buffer = fs.readFileSync(stackConfigPath, 'utf8');
 
-				if (args.show) {
-					showTable(result, args.all);
-				}
+		const techs = args.yaml && !error ? yaml.load(buffer) : JSON.parse(buffer.toString());
 
-				const fileResult = JSON.stringify(result, null, 2);
+		const result = generate(techs, {});
 
-				const resultPath = args.global ? defaultStack : stackPath;
+		if (args.show) {
+			showTable(result, args.all);
+		}
 
-				fs.writeFile(resultPath, fileResult, error => {
-					if (error) {
-						throw error;
-					}
-				});
-			}
-		});
+		const resultPath = args.global ? defaultStack : (args.yaml ? stackPathYaml : stackPath);
+
+		const fileResult = args.yaml ? yaml.dump(result) : JSON.stringify(result, null, 2);
+
+		fs.writeFileSync(resultPath, fileResult, 'utf8');
 	});
 } else if (args.tick || args.untick || args.remove || args.show) {
-	const resultPath = args.global ? defaultStack : stackPath;
+	const resultPath = args.global ? defaultStack : (args.yaml ? stackPathYaml : stackPath);
 
 	fs.access(resultPath, error => {
 		if (error) {
 			console.log('It\'s weird, are you sure you run \'stack --generate\' first');
 		} else {
-			fs.readFile(resultPath, (error, buffer) => {
-				if (error) {
-					throw error;
-				}
+			const buffer = fs.readFileSync(resultPath, 'utf8');
 
-				let result = JSON.parse(buffer.toString());
+			let result = args.yaml ? yaml.load(buffer) : JSON.parse(buffer.toString());
 
+			if (checkAllTick(result, args.tick, args.untick, args.remove)) {
 				result = tickAll(result, args.tick, args.untick, args.remove);
+			}
 
-				showTable(result, args.all);
+			showTable(result, args.all);
 
-				const fileResult = JSON.stringify(result, null, 2);
+			if (checkAllTick(result, args.tick, args.untick, args.remove)) {
+				const fileResult = args.yaml ? yaml.dump(result) : JSON.stringify(result, null, 2);
 
-				fs.writeFile(resultPath, fileResult, error => {
-					if (error) {
-						throw error;
-					}
+				fs.writeFileSync(resultPath, fileResult, 'utf8');
 
-					if (!args.show) {
-						console.log(
-							chalk.green('Generate successful, check your stack.json or stack --show to show stack')
-						);
-					}
-				});
-			});
+				if (!args.show) {
+					console.log(
+						chalk.green('Generate successful, check your stack.json or stack --show to show stack')
+					);
+				}
+			}
 		}
 	});
 } else if (args.version) {
-	console.log('1.1.0');
+	console.log('1.2.0');
 } else {
 	if (!args.help) {
 		console.log(chalk.yellow('\nMake sure you use right options list below:'));
