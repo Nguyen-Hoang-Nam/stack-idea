@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/Nguyen-Hoang-Nam/stack-idea/badge.svg)](https://coveralls.io/github/Nguyen-Hoang-Nam/stack-idea)
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/xojs/xo)
 
-Generate stack for your whole new idea.
+Generate random stack for your whole new idea.
 
 ![screenshot](./screenshot.png)
 
@@ -17,6 +17,10 @@ Generate stack for your whole new idea.
 
 ```bash
 npm install -g stack-idea
+```
+
+```bash
+yarn global add stack-idea
 ```
 
 ## Usage
@@ -42,11 +46,143 @@ $ stack --help
     $ stack --generate --show
 ```
 
-## Config
+## Examples
 
-```stack``` by default has its own stack-config.json file. Therefore, when you want to customize, just create your own stack-config.json in your directory. Following config is default by the way:
+### 1. Generate stack by default config
+
+```bash
+stack --generate
+```
+
+This command will generate a random stack and store in stack.json file in current directory.
 
 ```json
+{
+  "Render": {
+    "Name": "Client-Side",
+    "Tick": "untick"
+  },
+  "API": {
+    "Name": "GraphQL",
+    "Tick": "untick"
+  },
+  "Framework": {
+    "Name": "Relay",
+    "Tick": "untick"
+  },
+  "JS Framework": {
+    "Name": "React",
+    "Tick": "untick"
+  },
+  "State Management": {
+    "Name": "Redux",
+    "Tick": "untick"
+  },
+  "JS  Preprocessor": {
+    "Name": "Typescript",
+    "Tick": "untick"
+  },
+  "CSS Framework": {
+    "Name": "Material UI",
+    "Tick": "untick"
+  },
+  "CSS Preprocessor": {
+    "Name": "None",
+    "Tick": "untick"
+  },
+  "Modern CSS": {
+    "Name": "None",
+    "Tick": "untick"
+  },
+  "Test": {
+    "Name": "Cypress",
+    "Tick": "untick"
+  },
+  "Wasm": {
+    "Name": "Go",
+    "Tick": "untick"
+  },
+  "Back-End": {
+    "Name": "Node",
+    "Tick": "untick"
+  },
+  "Database": {
+    "Name": "MySQL",
+    "Tick": "untick"
+  },
+  "Cache": {
+    "Name": "Hazelcast",
+    "Tick": "untick"
+  },
+  "Search": {
+    "Name": "Splunk",
+    "Tick": "untick"
+  },
+  "Message Broker": {
+    "Name": "Kafka",
+    "Tick": "untick"
+  },
+  "Network": {
+    "Name": "HTTP",
+    "Tick": "untick"
+  },
+  "Server": {
+    "Name": "Alphine",
+    "Tick": "untick"
+  },
+  "Web Server": {
+    "Name": "Nginx",
+    "Tick": "untick"
+  }
+}
+```
+
+### 2. Generate stack in global
+
+If you want to access stack wherever directory, just use option ```--global``` then stack will use stack.json file in global.
+
+```bash
+stack --generate --global
+```
+
+### 3. Show stack in terminal
+
+This may be optional, you can use ```cat``` or your text editor to read stack.json file. This command can go with ```--generate``` and also supports ```--global```.
+
+```bash
+stack --show
+```
+
+![screenshot](./screenshot.png)
+
+### 4. Tick row in stack
+
+If you think this stack like to do lists, you may find that check, uncheck and remove row are really useful to manipulate this list. In stack.json file, you can see there are 'Tick' property and default is 'untick'.
+
+In convention, we define three states of row
+
+- Untick: Empty check box, you might not done this row yet
+- Tick: Check check box, you might done this row
+- Remove: Remove this row, you might thought this row is not necessary in your stack
+
+```bash
+stack --tick="foo" --untick="bar" --remove="foobar" --tick="baz"
+```
+
+### 5. Show all row in stack
+
+When you remove row, it's no longer show in ```--show```. Therefore, use ```--all``` to view all rows.
+
+```bash
+stack --show --all
+```
+
+## Config
+
+```stack``` by default, has its own [stack-config.json](./stack-config.json) file. Therefore, when you want to customize, just create your own [stack-config.json](./stack-config.json) in your directory. Following config is default by the way:
+
+```json
+// stack-config.json
 {
   "Render": [
     {
