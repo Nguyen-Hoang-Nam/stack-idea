@@ -6,7 +6,7 @@
 
 Generate random stack for your whole new idea.
 
-![screenshot](./screenshot.png)
+![screenshot](./screenshot-all.png)
 
 ## Prerequisite
 
@@ -36,11 +36,21 @@ $ stack --help
     -v, --version     Show version
     -g, --generate    Generate stack base on [stack-config.json](./stack-config.json) and store in stack.json
     -s, --show        Show stack from stack.json
-		-a, --all					Show all tech even remove one
-		-t, --tick				Tick after setup tech successful
-		-u, --untick			Untick when setup are not done yet
-		-r, --remove			Remove tech that not use
-		-G, --global			Use file stack.json in global
+    -a, --all         Show all tech even remove one
+    -t, --tick        Tick after setup tech successful
+    -u, --untick      Untick when setup are not done yet
+    -r, --remove      Remove tech that not use
+    -G, --global      Use file stack.json in global
+    -y, --yaml        Use yaml file type instead of json
+    -i, --item        Use to input array of parameter
+    --add-item        Add item to row in stack-config in global
+    --remove-item     Remove item from row in stack-config in global
+    --get-row        	Print all items of row in stack-config in global
+    --add-row         Add row to stack-config in global
+    --remove-row      Remove row from stack-config in global
+    --hide-row        Hide row in stack-config in global
+    --show-row        Show row that hide in stack-config in global
+    --get-all         Print stack-config in global
 
   Examples
     $ stack --generate --show
@@ -153,7 +163,7 @@ This may be optional, you can use ```cat``` or your text editor to read stack.js
 stack --show
 ```
 
-![screenshot](./screenshot.png)
+![screenshot](./screenshot-generate.png)
 
 ### 4. Tick row in stack
 
@@ -166,8 +176,10 @@ In convention, we define three states of row
 - Remove: Remove this row, you might thought this row is not necessary in your stack
 
 ```bash
-stack --tick="foo" --untick="bar" --remove="foobar" --tick="baz"
+stack --tick="Back-End" --remove="Wasm"
 ```
+
+![screenshot](./screenshot-tick.png)
 
 ### 5. Show all row in stack
 
@@ -175,6 +187,22 @@ When you remove row, it's no longer show in ```--show```. Therefore, use ```--al
 
 ```bash
 stack --show --all
+```
+
+### 6. Add item to row
+
+You love Java but Back-End array doesn't has it, just add it to array.
+
+```bash
+stack --add-item="Back-End" --item="Java"
+```
+
+### 7. Remove row
+
+Maybe, Wasm is not populate enough so you don't want to use it in your stack, just remove whole Wasm row.
+
+```bash
+stack --remove-row="Wasm"
 ```
 
 ## Config
@@ -246,7 +274,7 @@ stack --show --all
 }
 ```
 
-While some stacks can stand alone, others have dependencies such as *Apollo* framework may go with *GraphQL*. 
+While some stacks can stand alone, others have dependencies such as *Apollo* framework may go with *GraphQL*.
 
 ## Contributing
 

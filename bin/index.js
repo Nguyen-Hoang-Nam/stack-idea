@@ -1,91 +1,66 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
 const minimist = require('minimist');
-const chalk = require('chalk');
-const {generate} = require('./generate');
-const {tickAll, help, showTable} = require('./utils');
-const {minimistConfig} = require('./config');
 
-const defaultStackConfig = path.join(__dirname, '..', 'stack-config.json');
-const stackConfig = './stack-config.json';
-const defaultStack = path.join(__dirname, '..', 'stack.json');
-const stackPath = './stack.json';
+const {generate} = require('./generate');
+const {tickAll, checkAllTick, help, showTable, version, isManipulateStack, isManipulateStackConfig} = require('./command');
+const {minimistConfig} = require('./config');
+const {readFile, writeFile} = require('./path.js');
+const {addItem, removeItem, getRow, addRow, removeRow, hiddenRow, showRow, getAll} = require('./manipulate');
+const {successGenerate} = require('./message');
 
 const args = minimist(process.argv.slice(2), minimistConfig);
 
-if (args.generate) {
-	let stackConfigPath = stackConfig;
+const CONFIG = 'stack-config';
+const STORE = 'stack';
 
-	fs.access(stackConfigPath, fs.F_OK, error => {
-		if (error) {
-			stackConfigPath = defaultStackConfig;
+if (args.generate) {
+	readFile(CONFIG, args, techs => {
+		const result = generate(techs, {}, techs.Hidden);
+		const fileName = typeof args.generate === 'string' ? args.generate : STORE;
+
+		writeFile(fileName, result, args);
+
+		if (!args.show) {
+			successGenerate();
+		}
+	});
+} else if (isManipulateStackConfig(args)) {
+	readFile(CONFIG, args, techs => {
+		if (args['add-item']) {
+			addItem(techs, args['add-item'], args.item);
+		} else if (args['remove-item']) {
+			removeItem(techs, args['remove-item'], args.item);
+		} else if (args['get-row']) {
+			getRow(techs, args['get-row']);
+		} else if (args['add-row']) {
+			addRow(techs, args['add-row'], args.item);
+		} else if (args['remove-row']) {
+			removeRow(techs, args['remove-row']);
+		} else if (args['hide-row']) {
+			hiddenRow(techs, args['hide-row']);
+		} else if (args['show-row']) {
+			showRow(techs, args['show-row']);
+		} else if (args['get-all']) {
+			getAll(techs);
 		}
 
-		fs.readFile(stackConfigPath, (error, buffer) => {
-			if (error) {
-				console.log(error);
-			} else {
-				const techs = JSON.parse(buffer.toString());
-				const result = generate(techs, {});
-
-				if (args.show) {
-					showTable(result, args.all);
-				}
-
-				const fileResult = JSON.stringify(result, null, 2);
-
-				const resultPath = args.global ? defaultStack : stackPath;
-
-				fs.writeFile(resultPath, fileResult, error => {
-					if (error) {
-						throw error;
-					}
-				});
-			}
-		});
+		writeFile(CONFIG, techs, args);
 	});
-} else if (args.tick || args.untick || args.remove || args.show) {
-	const resultPath = args.global ? defaultStack : stackPath;
+} else if (isManipulateStack(args)) {
+	const fileName = typeof args.show === 'string' ? args.show : STORE;
 
-	fs.access(resultPath, error => {
-		if (error) {
-			console.log('It\'s weird, are you sure you run \'stack --generate\' first');
-		} else {
-			fs.readFile(resultPath, (error, buffer) => {
-				if (error) {
-					throw error;
-				}
+	readFile(fileName, args, result => {
+		if (checkAllTick(result, args.tick, args.untick, args.remove)) {
+			result = tickAll(result, args.tick, args.untick, args.remove);
 
-				let result = JSON.parse(buffer.toString());
-
-				result = tickAll(result, args.tick, args.untick, args.remove);
-
-				showTable(result, args.all);
-
-				const fileResult = JSON.stringify(result, null, 2);
-
-				fs.writeFile(resultPath, fileResult, error => {
-					if (error) {
-						throw error;
-					}
-
-					if (!args.show) {
-						console.log(
-							chalk.green('Generate successful, check your stack.json or stack --show to show stack')
-						);
-					}
-				});
-			});
+			writeFile(STORE, result, args);
+		} else if (args.show) {
+			showTable(result, args.all);
 		}
 	});
 } else if (args.version) {
-	console.log('1.1.0');
+	version();
 } else {
-	if (!args.help) {
-		console.log(chalk.yellow('\nMake sure you use right options list below:'));
-	}
-
-	help();
+	help(args.help);
 }
