@@ -1,78 +1,49 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
 const minimist = require('minimist');
-const chalk = require('chalk');
-const yaml = require('js-yaml');
 
-const version = require('./version');
 const {generate} = require('./generate');
-const {tickAll, checkAllTick, help, showTable} = require('./utils');
+const {tickAll, checkAllTick, help, showTable, version} = require('./utils');
 const {minimistConfig} = require('./config');
-const {defaultStack, defaultStackConfig, stackConfig, stackPath, stackConfigYaml, stackPathYaml} = require('./path.js');
+const {readFile, writeFile} = require('./path.js');
+const {addItem} = require('./manipulate');
+const {successGenerate} = require('./message');
 
 const args = minimist(process.argv.slice(2), minimistConfig);
 
+const CONFIG = 'stack-config';
+const STORE = 'stack';
+
 if (args.generate) {
-	let stackConfigPath = args.yaml ? stackConfigYaml : stackConfig;
-
-	fs.access(stackConfigPath, fs.F_OK, error => {
-		if (error) {
-			stackConfigPath = defaultStackConfig;
-		}
-
-		const buffer = fs.readFileSync(stackConfigPath, 'utf8');
-
-		const techs = args.yaml && !error ? yaml.load(buffer) : JSON.parse(buffer.toString());
-
+	readFile(CONFIG, args, techs => {
 		const result = generate(techs, {});
 
-		if (args.show) {
-			showTable(result, args.all);
+		writeFile(STORE, result, args);
+
+		if (!args.show) {
+			successGenerate();
+		}
+	});
+} else if (args['add-item'] || args['get-row'] || args['add-row'] || args['remove-item'] || args['remove-row'] || args['hide-row']) {
+	readFile(CONFIG, args, techs => {
+		if (args['add-item']) {
+			techs = addItem(techs, args['add-item'][0], args['add-item'][1]);
 		}
 
-		const resultPath = args.global ? defaultStack : (args.yaml ? stackPathYaml : stackPath);
-
-		const fileResult = args.yaml ? yaml.dump(result) : JSON.stringify(result, null, 2);
-
-		fs.writeFileSync(resultPath, fileResult, 'utf8');
+		writeFile(CONFIG, techs, args);
 	});
 } else if (args.tick || args.untick || args.remove || args.show) {
-	const resultPath = args.global ? defaultStack : (args.yaml ? stackPathYaml : stackPath);
+	readFile(STORE, args, result => {
+		if (checkAllTick(result, args.tick, args.untick, args.remove)) {
+			result = tickAll(result, args.tick, args.untick, args.remove);
 
-	fs.access(resultPath, error => {
-		if (error) {
-			console.log('It\'s weird, are you sure you run \'stack --generate\' first');
-		} else {
-			const buffer = fs.readFileSync(resultPath, 'utf8');
-
-			let result = args.yaml ? yaml.load(buffer) : JSON.parse(buffer.toString());
-
-			if (checkAllTick(result, args.tick, args.untick, args.remove)) {
-				result = tickAll(result, args.tick, args.untick, args.remove);
-			}
-
+			writeFile(STORE, result, args);
+		} else if (args.show) {
 			showTable(result, args.all);
-
-			if (checkAllTick(result, args.tick, args.untick, args.remove)) {
-				const fileResult = args.yaml ? yaml.dump(result) : JSON.stringify(result, null, 2);
-
-				fs.writeFileSync(resultPath, fileResult, 'utf8');
-
-				if (!args.show) {
-					console.log(
-						chalk.green('Generate successful, check your stack.json or stack --show to show stack')
-					);
-				}
-			}
 		}
 	});
 } else if (args.version) {
-	console.log(version);
+	version();
 } else {
-	if (!args.help) {
-		console.log(chalk.yellow('\nMake sure you use right options list below:'));
-	}
-
-	help();
+	help(args.help);
 }

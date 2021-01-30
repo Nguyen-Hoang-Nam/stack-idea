@@ -1,8 +1,8 @@
-const {random} = require('./utils');
+const {random, checkDeepProperty} = require('./utils');
 
 const generate = (techs, result) => {
 	for (const tech in techs) {
-		if (Object.prototype.hasOwnProperty.call(techs, tech) && tech !== 'Name') {
+		if (checkDeepProperty(techs, tech) && tech !== 'Name') {
 			const value = random(techs[tech]);
 
 			if (typeof value === 'string') {

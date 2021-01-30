@@ -48,5 +48,10 @@
     "files": [
       "test/*.test.js"
     ]
+  },
+  "xo": {
+    "ignores": [
+      "bin/version.js"
+    ]
   }
 }

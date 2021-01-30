@@ -1,9 +1,3 @@
-const Table = require('cli-table');
-const chalk = require('chalk');
-const {tableConfig} = require('./config');
-
-const table = new Table(tableConfig);
-
 const symbols = {
 	tick: {
 		linux: '✔',
@@ -29,7 +23,63 @@ const symbol = name => {
 	return process.platform === 'win32' ? symbols[name].window : symbols[name].linux;
 };
 
-const tick = check => {
+const checkProperty = (result, key) => {
+	return Object.prototype.hasOwnProperty.call(result, key);
+};
+
+const checkDeepProperty = (result, key) => {
+	if (typeof result === 'object' && result !== null) {
+		if (checkProperty(result, key)) {
+			return true;
+		}
+
+		for (const property in result) {
+			if (checkProperty(result, property) && property !== 'Name' && checkDeepProperty(result[property], key)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+};
+
+const getPropertyPath = (result, key, path = '') => {
+	if (Array.isArray(result)) {
+		for (const [i, element] of result.entries()) {
+			if (typeof element === 'object') {
+				const value = getPropertyPath(element, key, `${path}.${i}`);
+
+				if (value) {
+					return value;
+				}
+			}
+		}
+	} else if (typeof result === 'object' && result !== null) {
+		if (checkProperty(result, key)) {
+			return `${path}.${key}`;
+		}
+
+		for (const property in result) {
+			if (checkProperty(result, property) && property !== 'Name') {
+				const value = getPropertyPath(result[property], key, `${path}.${property}`);
+
+				if (value) {
+					return value;
+				}
+			}
+		}
+	}
+
+	return '';
+};
+
+exports.getPathComponent = path => {
+	const component = path.split('.');
+	component.shift();
+	return component;
+};
+
+exports.tick = check => {
 	if (check === 'untick') {
 		return symbol('checkbox');
 	}
@@ -43,14 +93,14 @@ const tick = check => {
 	}
 };
 
-const tickOneOrMany = (mark, result, value) => {
+exports.tickOneOrMany = (mark, result, value) => {
 	if (typeof mark === 'string') {
-		if (Object.prototype.hasOwnProperty.call(result, mark)) {
+		if (checkProperty(result, mark)) {
 			result[mark].Tick = value;
 		}
 	} else if (typeof mark === 'object') {
 		mark.forEach(tech => {
-			if (Object.prototype.hasOwnProperty.call(result, tech)) {
+			if (checkProperty(result, tech)) {
 				result[tech].Tick = value;
 			}
 		});
@@ -59,82 +109,21 @@ const tickOneOrMany = (mark, result, value) => {
 	return result;
 };
 
-const checkTick = (mark, result) => {
+exports.checkTick = (mark, result) => {
 	if (typeof mark === 'string') {
-		if (Object.prototype.hasOwnProperty.call(result, mark)) {
+		if (checkProperty(result, mark)) {
 			return true;
 		}
-	} else if (typeof mark === 'object') {
-		mark.forEach(tech => {
-			if (Object.prototype.hasOwnProperty.call(result, tech)) {
+	} else if (Array.isArray(mark)) {
+		for (const element of mark) {
+			if (checkProperty(result, element)) {
 				return true;
 			}
-		});
+		}
 	}
 
 	return false;
 };
 
-exports.checkAllTick = (result, ticks, unticks, removes) => {
-	return checkTick(ticks, result) || checkTick(unticks, result) || checkTick(removes, result);
-};
-
-exports.tickAll = (result, ticks, unticks, removes) => {
-	result = tickOneOrMany(ticks, result, 'tick');
-	result = tickOneOrMany(unticks, result, 'untick');
-	result = tickOneOrMany(removes, result, 'remove');
-	return result;
-};
-
-exports.showTable = (result, all) => {
-	for (let tech in result) {
-		if (Object.prototype.hasOwnProperty.call(result, tech)) {
-			const line = result[tech];
-			let name = line.name;
-
-			if (all || line.Tick !== 'remove') {
-				if (line.Tick === 'remove') {
-					tech = chalk.gray(tech);
-					name = chalk.gray(line.Name);
-				} else if (line.Tick === 'tick') {
-					tech = chalk.green(tech);
-					name = chalk.green(line.Name);
-				} else if (line.Tick === 'untick') {
-					tech = chalk.white(tech);
-					name = chalk.white(line.Name);
-				}
-
-				table.push({
-					[tech]: [name, tick(line.Tick)]
-				});
-			}
-		}
-	}
-
-	console.log(table.toString());
-};
-
-const helpCommand = (alias, mean, pad) => console.log(' ', alias.padEnd(pad), mean);
-
-exports.help = () => {
-	console.log('\n');
-	console.log('Usage: stack <Options>');
-	console.log('\n');
-	console.log('Options: \n');
-	helpCommand('-h, --help', 'Show help');
-	helpCommand('-v, --version', 'Show version');
-	helpCommand('-g, --generate', 'Generate stack base on stack-config.json and store in stack.json');
-	helpCommand('-s, --show', 'Show stack from stack.json');
-	helpCommand('-a, --all', 'Show all tech even remove one');
-	helpCommand('-t, --tick', 'Tick after setup tech successful');
-	helpCommand('-u, --untick', 'Untick when setup are not done yet');
-	helpCommand('-r, --remove', 'Remove tech that not use');
-	helpCommand('-G, --global', 'Use file stack.json in global');
-	console.log('\n');
-	console.log('Examples: \n');
-	console.log('  $ stack --generate --show');
-};
-
-exports.tick = tick;
-exports.tickOneOrMany = tickOneOrMany;
-
+exports.checkDeepProperty = checkDeepProperty;
+exports.getPropertyPath = getPropertyPath;

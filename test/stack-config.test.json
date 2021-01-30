@@ -1,0 +1,27 @@
+{
+  "Render": [
+    {
+      "Name": "Server-Side"
+    },
+    {
+      "Name": "Client-Side",
+      "API": [
+        {
+          "Name": "REST"
+        },
+        {
+          "Name": "GraphQL",
+          "GraphQL Framework": [
+            "None",
+            "Relay",
+            "Apollo"
+          ]
+        }
+      ]
+    }
+  ],
+  "Database": [
+    "Oracle",
+    "MySQL"
+  ]
+}

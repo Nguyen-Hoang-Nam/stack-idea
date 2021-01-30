@@ -2,4 +2,4 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npm test
-genversion bin/version.js
+genversion --semi bin/version.js
