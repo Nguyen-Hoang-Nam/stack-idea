@@ -11,7 +11,8 @@ exports.minimistConfig = {
 		u: 'untick',
 		r: 'remove',
 		G: 'global',
-		y: 'yaml'
+		y: 'yaml',
+		i: 'item'
 	}
 };
 

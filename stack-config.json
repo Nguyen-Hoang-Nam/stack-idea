@@ -88,12 +88,12 @@
     "Oracle",
     "MySQL",
     "PostgreSQL",
-    "MongoDB",
     "Cassandra",
-    "MariaDB",
     "Teradata",
     "Hive",
-    "Neo4j"
+    "Neo4j",
+    "MariaDB",
+    "MongoDB"
   ],
   "Cache": [
     "Redis",
@@ -124,5 +124,6 @@
     "Nginx",
     "Apache",
     "Caddy"
-  ]
+  ],
+  "Hidden": []
 }

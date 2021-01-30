@@ -4,9 +4,12 @@ const chalk = require('chalk');
 
 const {tableConfig} = require('./config');
 const version = require('./version');
-const {checkTick, tickOneOrMany, checkDeepProperty, tick} = require('./utils');
+const {checkTick, tickOneOrMany, checkDeepProperty, tick, isManipulate} = require('./utils');
 
 const table = new Table(tableConfig);
+
+const manipulateStackConfig = ['add-item', 'remove-item', 'get-row', 'add-row', 'remove-row', 'hide-row', 'show-row', 'get-all'];
+const manipulateStack = ['tick', 'untick', 'remove', 'show'];
 
 exports.checkAllTick = (result, ticks, unticks, removes) => {
 	return checkTick(ticks, result) || checkTick(unticks, result) || checkTick(removes, result);
@@ -23,9 +26,9 @@ exports.showTable = (result, all) => {
 	for (let tech in result) {
 		if (checkDeepProperty(result, tech)) {
 			const line = result[tech];
-			let name = line.name;
+			let name = line.Name;
 
-			if (all || line.Tick !== 'remove') {
+			if ((all || line.Tick !== 'remove') && name !== 'None') {
 				if (line.Tick === 'remove') {
 					tech = chalk.gray(tech);
 					name = chalk.gray(line.Name);
@@ -46,6 +49,12 @@ exports.showTable = (result, all) => {
 
 	console.log(table.toString());
 };
+
+exports.isManipulateStackConfig = args =>
+	isManipulate(args, manipulateStackConfig);
+
+exports.isManipulateStack = args =>
+	isManipulate(args, manipulateStack);
 
 const helpCommand = (alias, mean, pad) => console.log(' ', alias.padEnd(pad), mean);
 

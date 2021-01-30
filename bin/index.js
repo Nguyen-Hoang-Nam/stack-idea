@@ -3,10 +3,10 @@
 const minimist = require('minimist');
 
 const {generate} = require('./generate');
-const {tickAll, checkAllTick, help, showTable, version} = require('./utils');
+const {tickAll, checkAllTick, help, showTable, version, isManipulateStack, isManipulateStackConfig} = require('./command');
 const {minimistConfig} = require('./config');
 const {readFile, writeFile} = require('./path.js');
-const {addItem} = require('./manipulate');
+const {addItem, removeItem, getRow, addRow, removeRow, hiddenRow, showRow, getAll} = require('./manipulate');
 const {successGenerate} = require('./message');
 
 const args = minimist(process.argv.slice(2), minimistConfig);
@@ -16,24 +16,41 @@ const STORE = 'stack';
 
 if (args.generate) {
 	readFile(CONFIG, args, techs => {
-		const result = generate(techs, {});
+		const result = generate(techs, {}, techs.Hidden);
+		const fileName = typeof args.generate === 'string' ? args.generate : STORE;
 
-		writeFile(STORE, result, args);
+		writeFile(fileName, result, args);
 
 		if (!args.show) {
 			successGenerate();
 		}
 	});
-} else if (args['add-item'] || args['get-row'] || args['add-row'] || args['remove-item'] || args['remove-row'] || args['hide-row']) {
+} else if (isManipulateStackConfig(args)) {
 	readFile(CONFIG, args, techs => {
 		if (args['add-item']) {
-			techs = addItem(techs, args['add-item'][0], args['add-item'][1]);
+			addItem(techs, args['add-item'], args.item);
+		} else if (args['remove-item']) {
+			removeItem(techs, args['remove-item'], args.item);
+		} else if (args['get-row']) {
+			getRow(techs, args['get-row']);
+		} else if (args['add-row']) {
+			addRow(techs, args['add-row'], args.item);
+		} else if (args['remove-row']) {
+			removeRow(techs, args['remove-row']);
+		} else if (args['hide-row']) {
+			hiddenRow(techs, args['hide-row']);
+		} else if (args['show-row']) {
+			showRow(techs, args['show-row']);
+		} else if (args['get-all']) {
+			getAll(techs);
 		}
 
 		writeFile(CONFIG, techs, args);
 	});
-} else if (args.tick || args.untick || args.remove || args.show) {
-	readFile(STORE, args, result => {
+} else if (isManipulateStack(args)) {
+	const fileName = typeof args.show === 'string' ? args.show : STORE;
+
+	readFile(fileName, args, result => {
 		if (checkAllTick(result, args.tick, args.untick, args.remove)) {
 			result = tickAll(result, args.tick, args.untick, args.remove);
 

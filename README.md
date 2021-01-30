@@ -36,11 +36,11 @@ $ stack --help
     -v, --version     Show version
     -g, --generate    Generate stack base on [stack-config.json](./stack-config.json) and store in stack.json
     -s, --show        Show stack from stack.json
-		-a, --all					Show all tech even remove one
-		-t, --tick				Tick after setup tech successful
-		-u, --untick			Untick when setup are not done yet
-		-r, --remove			Remove tech that not use
-		-G, --global			Use file stack.json in global
+    -a, --all         Show all tech even remove one
+    -t, --tick        Tick after setup tech successful
+    -u, --untick      Untick when setup are not done yet
+    -r, --remove      Remove tech that not use
+    -G, --global      Use file stack.json in global
 
   Examples
     $ stack --generate --show

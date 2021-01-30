@@ -125,5 +125,28 @@ exports.checkTick = (mark, result) => {
 	return false;
 };
 
+const remove = (list, element) => {
+	const index = list.indexOf(element);
+	if (index > -1) {
+		list.splice(index, 1);
+	}
+};
+
+exports.remove = remove;
+
+exports.removeAll = (list, elements) => {
+	for (const element of elements) {
+		remove(list, element);
+	}
+};
+
+exports.isManipulate = (args, manipulateList) => {
+	for (const element of manipulateList) {
+		if (args[element]) {
+			return true;
+		}
+	}
+};
+
 exports.checkDeepProperty = checkDeepProperty;
 exports.getPropertyPath = getPropertyPath;

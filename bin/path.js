@@ -3,7 +3,7 @@ const fs = require('fs');
 const Yaml = require('js-yaml');
 
 const {noStackConfig} = require('./message');
-const {showTable} = require('./utils');
+const {showTable} = require('./command');
 
 const globalPath = path.join(__dirname, '..');
 const localPath = '.';
