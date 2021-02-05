@@ -5,6 +5,7 @@ const chalk = require('chalk');
 const {tableConfig} = require('./config');
 const version = require('./version');
 const {checkOneOrManyByProperty, checkOneOrManyByValue, tickOneOrManyByProperty, tickOneOrManyByValue, checkDeepProperty, tick, isManipulate} = require('./utils');
+const {checkFuzzy, tickFuzzy} = require('./search');
 
 const table = new Table(tableConfig);
 
@@ -20,16 +21,30 @@ const checkOneState = (result, states) => {
 		return true;
 	}
 
+	if (typeof states === 'string' && checkFuzzy(result, states)) {
+		return true;
+	}
+
 	return false;
 };
 
-const tickOneState = (result, states, state) => {
+const tickOneState = async (result, states, state) => {
+	let found = 0;
 	if (checkOneOrManyByProperty(result, states)) {
+		found++;
 		tickOneOrManyByProperty(result, states, state);
 	}
 
 	if (checkOneOrManyByValue(result, states)) {
-		tickOneOrManyByValue(result, states, state);
+		if (typeof states === 'string' && found === 0) {
+			tickOneOrManyByValue(result, states, state);
+		} else if (Array.isArray(states)) {
+			tickOneOrManyByValue(result, states, state);
+		}
+	}
+
+	if (typeof states === 'string' && found === 0 && checkFuzzy(result, states)) {
+		await	tickFuzzy(result, states, state);
 	}
 
 	return result;
@@ -39,10 +54,10 @@ exports.checkAllState = (result, ticks, unticks, removes) => {
 	return checkOneState(result, ticks) || checkOneState(result, unticks) || checkOneState(result, removes);
 };
 
-exports.tickAllState = (result, ticks, unticks, removes) => {
-	result = tickOneState(result, ticks, 'tick');
-	result = tickOneState(result, unticks, 'untick');
-	result = tickOneState(result, removes, 'remove');
+exports.tickAllState = async (result, ticks, unticks, removes) => {
+	result = await tickOneState(result, ticks, 'tick');
+	result = await tickOneState(result, unticks, 'untick');
+	result = await tickOneState(result, removes, 'remove');
 	return result;
 };
 

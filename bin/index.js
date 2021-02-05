@@ -52,9 +52,10 @@ if (args.generate) {
 
 	readFile(fileName, args, result => {
 		if (checkAllState(result, args.tick, args.untick, args.remove)) {
-			result = tickAllState(result, args.tick, args.untick, args.remove);
-
-			writeFile(STORE, result, args);
+			tickAllState(result, args.tick, args.untick, args.remove)
+				.then(() => {
+					writeFile(STORE, result, args);
+				});
 		} else if (args.show) {
 			showTable(result, args.all);
 		}

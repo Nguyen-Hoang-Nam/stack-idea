@@ -119,12 +119,18 @@ exports.tickOneOrManyByProperty = (result, property, state) => {
 			result[property].Tick = state;
 		}
 	} else if (Array.isArray(property)) {
+		const temporary = [];
 		for (const element of property) {
 			if (checkProperty(result, element)) {
 				result[element].Tick = state;
+				temporary.push(element);
 			}
 		}
+
+		removeAll(property, temporary);
 	}
+
+	return result;
 };
 
 const tickOneByValue = (result, value, state, isSingle = false) => {
@@ -144,12 +150,18 @@ exports.tickOneOrManyByValue = (result, value, state) => {
 			tickOneByValue(result, value, state, true);
 		}
 	} else if (Array.isArray(value)) {
+		const temporary = [];
 		for (const element of value) {
 			if (checkValue(result, element)) {
 				tickOneByValue(result, element, state);
+				temporary.push(element);
 			}
 		}
+
+		removeAll(value, temporary);
 	}
+
+	return result;
 };
 
 exports.checkOneOrManyByProperty = (result, property) => {
@@ -193,11 +205,13 @@ const remove = (list, element) => {
 
 exports.remove = remove;
 
-exports.removeAll = (list, elements) => {
+const removeAll = (list, elements) => {
 	for (const element of elements) {
 		remove(list, element);
 	}
 };
+
+exports.removeAll = removeAll;
 
 exports.isManipulate = (args, manipulateList) => {
 	for (const element of manipulateList) {
@@ -205,5 +219,37 @@ exports.isManipulate = (args, manipulateList) => {
 			return true;
 		}
 	}
+};
+
+exports.stackToFuseArray = stack => {
+	const fuseArray = [];
+
+	for (const element in stack) {
+		if (checkProperty(stack, element)) {
+			const item = {
+				Stack: element,
+				Tech: stack[element].Name
+			};
+
+			fuseArray.push(item);
+		}
+	}
+
+	return fuseArray;
+};
+
+exports.searchResultToInquirerChoices = searchResult => {
+	const inquirerChoices = [];
+
+	for (const element of searchResult) {
+		const item = {
+			name: `${element.item.Stack} | ${element.item.Tech}`,
+			value: element.item.Stack
+		};
+
+		inquirerChoices.push(item);
+	}
+
+	return inquirerChoices;
 };
 

@@ -21,3 +21,26 @@ exports.tableConfig = {
 	colAligns: ['left', 'left', 'center'],
 	style: {compact: true, 'padding-left': 1, head: [], border: []}
 };
+
+exports.fuseConfig = {
+	keys: [
+		{
+			name: 'Stack',
+			weight: 0.6
+		},
+		{
+			name: 'Tech',
+			weight: 0.4
+		}
+	]
+};
+
+exports.searchPromptConfig = (message, choices) => ([
+	{
+		type: 'list',
+		name: 'result',
+		message,
+		choices
+	}
+]);
+
