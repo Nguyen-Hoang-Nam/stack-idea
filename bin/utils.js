@@ -23,10 +23,25 @@ const symbol = name => {
 	return process.platform === 'win32' ? symbols[name].window : symbols[name].linux;
 };
 
+/**
+ *
+ *
+ */
 const checkProperty = (result, key) => {
 	return Object.prototype.hasOwnProperty.call(result, key);
 };
 
+const checkValue = (result, value) => {
+	for (const element in result) {
+		if (result[element].Name === value) {
+			return true;
+		}
+	}
+
+	return false;
+};
+
+// Manipulate stack-config file
 const checkDeepProperty = (result, key) => {
 	if (typeof result === 'object' && result !== null) {
 		if (checkProperty(result, key)) {
@@ -42,6 +57,8 @@ const checkDeepProperty = (result, key) => {
 
 	return false;
 };
+
+exports.checkDeepProperty = checkDeepProperty;
 
 const getPropertyPath = (result, key, path = '') => {
 	if (Array.isArray(result)) {
@@ -73,12 +90,15 @@ const getPropertyPath = (result, key, path = '') => {
 	return '';
 };
 
+exports.getPropertyPath = getPropertyPath;
+
 exports.getPathComponent = path => {
 	const component = path.split('.');
 	component.shift();
 	return component;
 };
 
+// Manipulate stack file
 exports.tick = check => {
 	if (check === 'untick') {
 		return symbol('checkbox');
@@ -93,30 +113,69 @@ exports.tick = check => {
 	}
 };
 
-exports.tickOneOrMany = (mark, result, value) => {
-	if (typeof mark === 'string') {
-		if (checkProperty(result, mark)) {
-			result[mark].Tick = value;
+exports.tickOneOrManyByProperty = (result, property, state) => {
+	if (typeof property === 'string') {
+		if (checkProperty(result, property)) {
+			result[property].Tick = state;
 		}
-	} else if (typeof mark === 'object') {
-		mark.forEach(tech => {
-			if (checkProperty(result, tech)) {
-				result[tech].Tick = value;
+	} else if (Array.isArray(property)) {
+		for (const element of property) {
+			if (checkProperty(result, element)) {
+				result[element].Tick = state;
 			}
-		});
+		}
 	}
-
-	return result;
 };
 
-exports.checkTick = (mark, result) => {
-	if (typeof mark === 'string') {
-		if (checkProperty(result, mark)) {
+const tickOneByValue = (result, value, state, isSingle = false) => {
+	for (const element in result) {
+		if (result[element].Name === value) {
+			result[element].Tick = state;
+			if (isSingle) {
+				break;
+			}
+		}
+	}
+};
+
+exports.tickOneOrManyByValue = (result, value, state) => {
+	if (typeof value === 'string') {
+		if (checkValue(result, value)) {
+			tickOneByValue(result, value, state, true);
+		}
+	} else if (Array.isArray(value)) {
+		for (const element of value) {
+			if (checkValue(result, element)) {
+				tickOneByValue(result, element, state);
+			}
+		}
+	}
+};
+
+exports.checkOneOrManyByProperty = (result, property) => {
+	if (typeof property === 'string') {
+		if (checkProperty(result, property)) {
 			return true;
 		}
-	} else if (Array.isArray(mark)) {
-		for (const element of mark) {
+	} else if (Array.isArray(property)) {
+		for (const element of property) {
 			if (checkProperty(result, element)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+};
+
+exports.checkOneOrManyByValue = (result, value) => {
+	if (typeof value === 'string') {
+		if (checkValue(result, value)) {
+			return true;
+		}
+	} else if (Array.isArray(value)) {
+		for (const element of value) {
+			if (checkValue(result, element)) {
 				return true;
 			}
 		}
@@ -148,5 +207,3 @@ exports.isManipulate = (args, manipulateList) => {
 	}
 };
 
-exports.checkDeepProperty = checkDeepProperty;
-exports.getPropertyPath = getPropertyPath;

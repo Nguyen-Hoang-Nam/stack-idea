@@ -3,7 +3,7 @@
 const minimist = require('minimist');
 
 const {generate} = require('./generate');
-const {tickAll, checkAllTick, help, showTable, version, isManipulateStack, isManipulateStackConfig} = require('./command');
+const {tickAllState, checkAllState, help, showTable, version, isManipulateStack, isManipulateStackConfig} = require('./command');
 const {minimistConfig} = require('./config');
 const {readFile, writeFile} = require('./path.js');
 const {addItem, removeItem, getRow, addRow, removeRow, hiddenRow, showRow, getAll} = require('./manipulate');
@@ -51,8 +51,8 @@ if (args.generate) {
 	const fileName = typeof args.show === 'string' ? args.show : STORE;
 
 	readFile(fileName, args, result => {
-		if (checkAllTick(result, args.tick, args.untick, args.remove)) {
-			result = tickAll(result, args.tick, args.untick, args.remove);
+		if (checkAllState(result, args.tick, args.untick, args.remove)) {
+			result = tickAllState(result, args.tick, args.untick, args.remove);
 
 			writeFile(STORE, result, args);
 		} else if (args.show) {

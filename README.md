@@ -1,6 +1,6 @@
 # Stack Idea
 
-[![Build Status](https://travis-ci.org/Nguyen-Hoang-Nam/stack-idea.svg?branch=master)](https://travis-ci.org/Nguyen-Hoang-Nam/stack-idea)
+[![Build Status](https://github.com/Nguyen-Hoang-Nam/stack-idea/workflows/build/badge.svg)](https://github.com/Nguyen-Hoang-Nam/stack-idea/actions)
 [![Coverage Status](https://coveralls.io/repos/github/Nguyen-Hoang-Nam/stack-idea/badge.svg)](https://coveralls.io/github/Nguyen-Hoang-Nam/stack-idea)
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/xojs/xo)
 

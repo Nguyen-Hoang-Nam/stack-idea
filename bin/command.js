@@ -4,21 +4,45 @@ const chalk = require('chalk');
 
 const {tableConfig} = require('./config');
 const version = require('./version');
-const {checkTick, tickOneOrMany, checkDeepProperty, tick, isManipulate} = require('./utils');
+const {checkOneOrManyByProperty, checkOneOrManyByValue, tickOneOrManyByProperty, tickOneOrManyByValue, checkDeepProperty, tick, isManipulate} = require('./utils');
 
 const table = new Table(tableConfig);
 
 const manipulateStackConfig = ['add-item', 'remove-item', 'get-row', 'add-row', 'remove-row', 'hide-row', 'show-row', 'get-all'];
 const manipulateStack = ['tick', 'untick', 'remove', 'show'];
 
-exports.checkAllTick = (result, ticks, unticks, removes) => {
-	return checkTick(ticks, result) || checkTick(unticks, result) || checkTick(removes, result);
+const checkOneState = (result, states) => {
+	if (checkOneOrManyByProperty(result, states)) {
+		return true;
+	}
+
+	if (checkOneOrManyByValue(result, states)) {
+		return true;
+	}
+
+	return false;
 };
 
-exports.tickAll = (result, ticks, unticks, removes) => {
-	result = tickOneOrMany(ticks, result, 'tick');
-	result = tickOneOrMany(unticks, result, 'untick');
-	result = tickOneOrMany(removes, result, 'remove');
+const tickOneState = (result, states, state) => {
+	if (checkOneOrManyByProperty(result, states)) {
+		tickOneOrManyByProperty(result, states, state);
+	}
+
+	if (checkOneOrManyByValue(result, states)) {
+		tickOneOrManyByValue(result, states, state);
+	}
+
+	return result;
+};
+
+exports.checkAllState = (result, ticks, unticks, removes) => {
+	return checkOneState(result, ticks) || checkOneState(result, unticks) || checkOneState(result, removes);
+};
+
+exports.tickAllState = (result, ticks, unticks, removes) => {
+	result = tickOneState(result, ticks, 'tick');
+	result = tickOneState(result, unticks, 'untick');
+	result = tickOneState(result, removes, 'remove');
 	return result;
 };
 

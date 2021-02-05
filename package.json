@@ -32,6 +32,8 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "cli-table": "^0.3.4",
+    "fuse.js": "^6.4.6",
+    "inquirer": "^7.3.3",
     "js-yaml": "^4.0.0",
     "minimist": "^1.2.5"
   },
