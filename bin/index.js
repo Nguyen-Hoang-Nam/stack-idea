@@ -4,15 +4,12 @@ const minimist = require('minimist');
 
 const {generate} = require('./generate');
 const {tickAllState, checkAllState, help, showTable, version, isManipulateStack, isManipulateStackConfig} = require('./command');
-const {minimistConfig} = require('./config');
+const {minimistConfig, CONFIG, STORE} = require('./config');
 const {readFile, writeFile} = require('./path.js');
 const {addItem, removeItem, getRow, addRow, removeRow, hiddenRow, showRow, getAll} = require('./manipulate');
 const {successGenerate} = require('./message');
 
 const args = minimist(process.argv.slice(2), minimistConfig);
-
-const CONFIG = 'stack-config';
-const STORE = 'stack';
 
 if (args.generate) {
 	readFile(CONFIG, args, techs => {

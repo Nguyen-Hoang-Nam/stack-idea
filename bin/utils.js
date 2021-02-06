@@ -31,6 +31,8 @@ const checkProperty = (result, key) => {
 	return Object.prototype.hasOwnProperty.call(result, key);
 };
 
+exports.checkProperty = checkProperty;
+
 const checkValue = (result, value) => {
 	for (const element in result) {
 		if (result[element].Name === value) {

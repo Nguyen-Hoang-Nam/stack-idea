@@ -1,5 +1,8 @@
 const chalk = require('chalk');
 
+exports.CONFIG = 'stack-config';
+exports.STORE = 'stack';
+
 exports.minimistConfig = {
 	alias: {
 		h: 'help',
@@ -43,4 +46,12 @@ exports.searchPromptConfig = (message, choices) => ([
 		choices
 	}
 ]);
+
+exports.extension = {
+	json: 'json',
+	yaml: 'yml',
+	toml: 'toml',
+	xml: 'xml',
+	csv: 'csv'
+};
 
