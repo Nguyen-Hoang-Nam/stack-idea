@@ -12,7 +12,7 @@ const stackToArrayObject = stack => {
 				Stack: row,
 				Tech: stack[row].Name,
 				Tick: stack[row].Tick
-			}
+			};
 
 			stackArray.push(item);
 		}
@@ -28,7 +28,7 @@ const arrayObjectToStack = data => {
 		stack[row.Stack] = {
 			Name: row.Tech,
 			Tick: row.Tick
-		}
+		};
 	}
 
 	return stack;

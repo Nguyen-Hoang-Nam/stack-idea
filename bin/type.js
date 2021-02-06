@@ -1,7 +1,7 @@
 const YAML = require('js-yaml');
 const CSV = require('./type/csv');
 
-exports.write = (stack, type, option = {}) => {
+exports.write = (stack, type) => {
 	if (type === 'yaml') {
 		return YAML.dump(stack);
 	}
@@ -13,7 +13,7 @@ exports.write = (stack, type, option = {}) => {
 	return JSON.stringify(stack, null, 2);
 };
 
-exports.read = (buffer, type, option = {}) => {
+exports.read = (buffer, type) => {
 	if (type === 'yaml') {
 		return YAML.load(buffer);
 	}
