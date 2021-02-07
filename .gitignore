@@ -8,3 +8,4 @@ stack.yml
 *.xml
 *.ini
 .nyc_output/
+coverage/
