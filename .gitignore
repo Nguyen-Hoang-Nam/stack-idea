@@ -7,3 +7,4 @@ stack.yml
 *.csv
 *.xml
 *.ini
+.nyc_output/
