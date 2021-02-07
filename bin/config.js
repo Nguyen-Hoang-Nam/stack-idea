@@ -1,5 +1,8 @@
 const chalk = require('chalk');
 
+exports.CONFIG = 'stack-config';
+exports.STORE = 'stack';
+
 exports.minimistConfig = {
 	alias: {
 		h: 'help',
@@ -21,3 +24,40 @@ exports.tableConfig = {
 	colAligns: ['left', 'left', 'center'],
 	style: {compact: true, 'padding-left': 1, head: [], border: []}
 };
+
+exports.fuseConfig = {
+	keys: [
+		{
+			name: 'Stack',
+			weight: 0.6
+		},
+		{
+			name: 'Tech',
+			weight: 0.4
+		}
+	]
+};
+
+/**
+ * Generate config for search.
+ *
+ * @param {string} message - Question ask user to choose
+ * @param {object[]} choices - List of options
+ */
+exports.searchPromptConfig = (message, choices) => ([
+	{
+		type: 'list',
+		name: 'result',
+		message,
+		choices
+	}
+]);
+
+exports.extension = {
+	json: 'json',
+	yaml: 'yml',
+	toml: 'toml',
+	xml: 'xml',
+	csv: 'csv'
+};
+

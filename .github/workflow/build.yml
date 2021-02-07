@@ -1,0 +1,28 @@
+name: build
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v2.1.4
+        with:
+          node-version: '12'
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Test
+        run: npm converage
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
