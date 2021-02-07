@@ -1,6 +1,6 @@
 const test = require('ava');
 const stripAnsi = require('strip-ansi');
-const {tick, tickOneOrMany, checkTick, checkDeepProperty, getPropertyPath, getPathComponent} = require('../bin/utils');
+const {tickSymbolByState, tickOneOrManyByProperty, tickOneOrManyByValue, checkOneOrManyByProperty, checkOneOrManyByValue, checkDeepProperty, getPropertyPath, getPathComponent, stackToFuseArray, searchResultToInquirerChoices} = require('../bin/utils');
 
 const data = {
 	Render: {
@@ -17,12 +17,13 @@ const data = {
 	}
 };
 
+// Manipulate stack fie
 test('Show tick icon', t => {
-	t.true(stripAnsi(tick('tick')) === '✔' || stripAnsi(tick('tick')) === '√');
+	t.true(stripAnsi(tickSymbolByState('tick')) === '✔' || stripAnsi(tickSymbolByState('tick')) === '√');
 });
 
-test('Tick one tech', t => {
-	t.deepEqual(tickOneOrMany('API', data, 'tick'), {
+test('Tick one row by property', t => {
+	t.deepEqual(tickOneOrManyByProperty(data, 'API', 'tick'), {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'untick'
@@ -38,11 +39,45 @@ test('Tick one tech', t => {
 	});
 });
 
-test('Tick many techs', t => {
-	t.deepEqual(tickOneOrMany(['API', 'JS Framework'], data, 'tick'), {
+test('Tick many rows by property', t => {
+	t.deepEqual(tickOneOrManyByProperty(data, ['API', 'JS Framework'], 'remove'), {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'untick'
+		},
+		API: {
+			Name: 'REST',
+			Tick: 'remove'
+		},
+		'JS Framework': {
+			Name: 'Vue',
+			Tick: 'remove'
+		}
+	});
+});
+
+test('Tick one row by value', t => {
+	t.deepEqual(tickOneOrManyByValue(data, 'REST', 'tick'), {
+		Render: {
+			Name: 'Client-Side',
+			Tick: 'untick'
+		},
+		API: {
+			Name: 'REST',
+			Tick: 'tick'
+		},
+		'JS Framework': {
+			Name: 'Vue',
+			Tick: 'remove'
+		}
+	});
+});
+
+test('Tick many rows by value', t => {
+	t.deepEqual(tickOneOrManyByValue(data, ['Client-Side', 'Vue'], 'tick'), {
+		Render: {
+			Name: 'Client-Side',
+			Tick: 'tick'
 		},
 		API: {
 			Name: 'REST',
@@ -55,12 +90,79 @@ test('Tick many techs', t => {
 	});
 });
 
-test('Check one tick', t => {
-	t.is(checkTick('API', data), true);
+test('Check property exist', t => {
+	t.is(checkOneOrManyByProperty(data, 'API'), true);
 });
 
-test('Check many ticks', t => {
-	t.is(checkTick(['API', 'JS Framework'], data), true);
+test('Check properties exist', t => {
+	t.is(checkOneOrManyByProperty(data, ['API', 'JS Framework']), true);
+});
+
+test('Check value exist', t => {
+	t.is(checkOneOrManyByValue(data, 'REST'), true);
+});
+
+test('Check values exist', t => {
+	t.is(checkOneOrManyByValue(data, ['Client-Side', 'Vue']), true);
+});
+
+// Search
+
+const fuseArray = [
+	{
+		Stack: 'Render',
+		Tech: 'Client-Side'
+	},
+	{
+		Stack: 'API',
+		Tech: 'REST'
+	},
+	{
+		Stack: 'JS Framework',
+		Tech: 'Vue'
+	}
+];
+
+test('Convert stack object to fuse array', t => {
+	t.deepEqual(stackToFuseArray(data), fuseArray);
+});
+
+const fuseResult = [
+	{
+		item: {
+			Stack: 'Render',
+			Tech: 'Client-Side'
+		}
+	},
+	{
+		item: {
+			Stack: 'API',
+			Tech: 'REST'
+		}
+	},
+	{
+		item: {
+			Stack: 'JS Framework',
+			Tech: 'Vue'
+		}
+	}
+];
+
+test('Convert fuse array to inquirer array', t => {
+	t.deepEqual(searchResultToInquirerChoices(fuseResult), [
+		{
+			name: 'Render | Client-Side',
+			value: 'Render'
+		},
+		{
+			name: 'API | REST',
+			value: 'API'
+		},
+		{
+			name: 'JS Framework | Vue',
+			value: 'JS Framework'
+		}
+	]);
 });
 
 const config = {

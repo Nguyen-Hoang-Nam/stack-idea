@@ -4,31 +4,109 @@ const chalk = require('chalk');
 
 const {tableConfig} = require('./config');
 const version = require('./version');
-const {checkTick, tickOneOrMany, checkDeepProperty, tick, isManipulate} = require('./utils');
+const {checkOneOrManyByProperty, checkOneOrManyByValue, tickOneOrManyByProperty, tickOneOrManyByValue, checkDeepProperty, tickSymbolByState, isManipulate} = require('./utils');
+const {checkFuzzy, tickFuzzy} = require('./search');
 
 const table = new Table(tableConfig);
 
 const manipulateStackConfig = ['add-item', 'remove-item', 'get-row', 'add-row', 'remove-row', 'hide-row', 'show-row', 'get-all'];
 const manipulateStack = ['tick', 'untick', 'remove', 'show'];
 
-exports.checkAllTick = (result, ticks, unticks, removes) => {
-	return checkTick(ticks, result) || checkTick(unticks, result) || checkTick(removes, result);
+/**
+ * Check name exist in stack.
+ *
+ * @param {Object} stack - Store stack
+ * @param {string[]} states - Store items
+ * @return {boolean}
+ */
+const checkOneState = (stack, states) => {
+	if (checkOneOrManyByProperty(stack, states)) {
+		return true;
+	}
+
+	if (checkOneOrManyByValue(stack, states)) {
+		return true;
+	}
+
+	if (typeof states === 'string' && checkFuzzy(stack, states)) {
+		return true;
+	}
+
+	return false;
 };
 
-exports.tickAll = (result, ticks, unticks, removes) => {
-	result = tickOneOrMany(ticks, result, 'tick');
-	result = tickOneOrMany(unticks, result, 'untick');
-	result = tickOneOrMany(removes, result, 'remove');
-	return result;
+/**
+ * Tick item.
+ *
+ * @param {Object} stack - Store stack
+ * @param {(string | string[])} states - List of items
+ * @param {string} state - Name of state
+ * @return {Object}
+ */
+const tickOneState = async (stack, states, state) => {
+	let found = 0;
+	if (checkOneOrManyByProperty(stack, states)) {
+		found++;
+		tickOneOrManyByProperty(stack, states, state);
+	}
+
+	if (checkOneOrManyByValue(stack, states)) {
+		if (typeof states === 'string' && found === 0) {
+			tickOneOrManyByValue(stack, states, state);
+		} else if (Array.isArray(states)) {
+			tickOneOrManyByValue(stack, states, state);
+		}
+	}
+
+	if (typeof states === 'string' && found === 0 && checkFuzzy(stack, states)) {
+		await	tickFuzzy(stack, states, state);
+	}
+
+	return stack;
 };
 
-exports.showTable = (result, all) => {
-	for (let tech in result) {
-		if (checkDeepProperty(result, tech)) {
-			const line = result[tech];
+/**
+ * Check all items from command exist.
+ *
+ * @param {Object} stack - Store stack
+ * @param {string[]} ticks - Store items need to check
+ * @param {string[]} unticks - Store items need to uncheck
+ * @param {string[]} removes - Store items need to remove
+ * @return {boolean}
+ */
+exports.checkAllState = (stack, ticks, unticks, removes) => {
+	return checkOneState(stack, ticks) || checkOneState(stack, unticks) || checkOneState(stack, removes);
+};
+
+/**
+ * Tick all items from command.
+ *
+ * @param {Object} stack - Store stack
+ * @param {string[]} ticks - Store items need to check
+ * @param {string[]} unticks - Store items need to uncheck
+ * @param {string[]} removes - Store items need to remove
+ * @return {Object]
+ */
+exports.tickAllState = async (stack, ticks, unticks, removes) => {
+	stack = await tickOneState(stack, ticks, 'tick');
+	stack = await tickOneState(stack, unticks, 'untick');
+	stack = await tickOneState(stack, removes, 'remove');
+	return stack;
+};
+
+/**
+ * Display stack as table.
+ *
+ * @param {Object} stack - Store stack
+ * @param {boolean} isAll - Show all stack even remove one
+ */
+exports.showTable = (stack, isAll) => {
+	for (let tech in stack) {
+		if (checkDeepProperty(stack, tech)) {
+			const line = stack[tech];
 			let name = line.Name;
 
-			if ((all || line.Tick !== 'remove') && name !== 'None') {
+			if ((isAll || line.Tick !== 'remove') && name !== 'None') {
 				if (line.Tick === 'remove') {
 					tech = chalk.gray(tech);
 					name = chalk.gray(line.Name);
@@ -41,7 +119,7 @@ exports.showTable = (result, all) => {
 				}
 
 				table.push({
-					[tech]: [name, tick(line.Tick)]
+					[tech]: [name, tickSymbolByState(line.Tick)]
 				});
 			}
 		}
@@ -50,14 +128,38 @@ exports.showTable = (result, all) => {
 	console.log(table.toString());
 };
 
+/**
+ * Check command manipulate config file.
+ *
+ * @param {Object} args - Argument of command
+ * @return {boolean}
+ */
 exports.isManipulateStackConfig = args =>
 	isManipulate(args, manipulateStackConfig);
 
+/**
+ * Check command manipulate stack file.
+ *
+ * @param {Object} args - Argument of command
+ * @return {boolean]
+ */
 exports.isManipulateStack = args =>
 	isManipulate(args, manipulateStack);
 
+/**
+ * Information of command.
+ *
+ * @param {string} alias - Alias of command
+ * @param {string} mean - Explain command
+ * @param {number} pad - Maximum length of command name
+ */
 const helpCommand = (alias, mean, pad) => console.log(' ', alias.padEnd(pad), mean);
 
+/**
+ * Show help.
+ *
+ * @param {boolean} isHelp - Check command call by help comman
+ */
 exports.help = isHelp => {
 	if (!isHelp) {
 		console.log(chalk.yellow('\nMake sure you use right options list below:'));
@@ -91,4 +193,7 @@ exports.help = isHelp => {
 	console.log('  $ stack --generate --show');
 };
 
+/**
+ * Show current version.
+ */
 exports.version = () => console.log(version);

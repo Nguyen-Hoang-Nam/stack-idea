@@ -1,11 +1,19 @@
 const {getPathComponent, checkDeepProperty, getPropertyPath, remove, removeAll} = require('./utils');
 
-exports.addItem = (result, key, value) => {
-	if (checkDeepProperty(result, key)) {
-		const path = getPropertyPath(result, key);
+/**
+ * Add tech to stack config.
+ *
+ * @param {Object} config - Store config
+ * @param {string} property - Name stack in config
+ * @param {(string | string[])} value - Items to add
+ * @return {Obbject}
+ */
+exports.addItem = (config, property, value) => {
+	if (checkDeepProperty(config, property)) {
+		const path = getPropertyPath(config, property);
 		const component = getPathComponent(path);
 
-		let row = result;
+		let row = config;
 		for (const element of component) {
 			row = row[element];
 		}
@@ -19,29 +27,43 @@ exports.addItem = (result, key, value) => {
 		}
 	}
 
-	return result;
+	return config;
 };
 
-exports.getRow = (result, key) => {
-	if (checkDeepProperty(result, key)) {
-		const path = getPropertyPath(result, key);
+/**
+ * Print row of config to screen.
+ *
+ * @param {Object} config - Store config
+ * @param {string} property - Name of stack
+ */
+exports.getRow = (config, property) => {
+	if (checkDeepProperty(config, property)) {
+		const path = getPropertyPath(config, property);
 		const component = getPathComponent(path);
 
-		let row = result;
+		let row = config;
 		for (const element of component) {
 			row = row[element];
 		}
 
-		console.log(key, ':', row);
+		console.log(property, ':', row);
 	}
 };
 
-exports.removeItem = (result, key, value) => {
-	if (checkDeepProperty(result, key)) {
-		const path = getPropertyPath(result, key);
+/**
+ * Remove item in stack config.
+ *
+ * @param {Object} config - Store config
+ * @param {string} property - Name of stack
+ * @param {(string | string[])} value - Name of item
+ * @return {Object}
+ */
+exports.removeItem = (config, property, value) => {
+	if (checkDeepProperty(config, property)) {
+		const path = getPropertyPath(config, property);
 		const component = getPathComponent(path);
 
-		let row = result;
+		let row = config;
 		for (const element of component) {
 			row = row[element];
 		}
@@ -53,53 +75,85 @@ exports.removeItem = (result, key, value) => {
 		}
 	}
 
-	return result;
+	return config;
 };
 
-exports.addRow = (result, key, value) => {
-	if (!checkDeepProperty(result, key)) {
+/**
+ * Add stack to config.
+ *
+ * @param {Object} config - Store config
+ * @param {string} property - Name of stack
+ * @param {(string | string[])} value - List of item
+ * @return {Object}
+ */
+exports.addRow = (config, property, value) => {
+	if (!checkDeepProperty(config, property)) {
 		if (typeof value === 'string') {
-			result[key] = [value];
+			config[property] = [value];
 		} else if (Array.isArray(value)) {
-			result[key] = value;
+			config[property] = value;
 		}
 	}
 
-	return result;
+	return config;
 };
 
-exports.removeRow = (result, key) => {
-	if (checkDeepProperty(result, key)) {
-		const path = getPropertyPath(result, key);
+/**
+ * Remove stack from config.
+ *
+ * @param {Object} config - Store config
+ * @param {string} property - Name of stack
+ * @return {Object}
+ */
+exports.removeRow = (config, property) => {
+	if (checkDeepProperty(config, property)) {
+		const path = getPropertyPath(config, property);
 		const component = getPathComponent(path);
 
 		if (component.length === 1) {
-			delete result[key];
+			delete config[property];
 		} else {
-			let parent = result;
+			let parent = config;
 
 			for (let i = 0; i < component.length - 1; i++) {
 				parent = parent[component[i]];
 			}
 
-			delete parent[key];
+			delete parent[property];
 		}
 	}
 
-	return result;
+	return config;
 };
 
-exports.hiddenRow = (result, key) => {
-	if (checkDeepProperty(result, key)) {
-		result.Hidden.push(key);
+/**
+ * Hide stack in config.
+ *
+ * @param {Object} config - Store config
+ * @param {string} property - Name of stack
+ */
+exports.hiddenRow = (config, property) => {
+	if (checkDeepProperty(config, property)) {
+		config.Hidden.push(property);
 	}
 };
 
-exports.showRow = (result, key) => {
-	if (checkDeepProperty(result, key) && result.Hidden.includes(key)) {
-		remove(result.Hidden, key);
+/**
+ * Show hidden stack in config.
+ *
+ * @param {Object} config - Store config
+ * @param {string} property - Name of stack
+ */
+exports.showRow = (config, property) => {
+	if (checkDeepProperty(config, property) && config.Hidden.includes(property)) {
+		remove(config.Hidden, property);
 	}
 };
 
-exports.getAll = result =>
-	console.log(result);
+/**
+ * Print confi to screen.
+ *
+ * @param {Object} config - Store config
+ */
+exports.getAll = config =>
+	console.log(config);
