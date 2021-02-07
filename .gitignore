@@ -2,9 +2,8 @@ node_modules
 .git
 package-lock.json
 stack.json
-*.yml
+stack.yml
 *.toml
 *.csv
 *.xml
 *.ini
-
