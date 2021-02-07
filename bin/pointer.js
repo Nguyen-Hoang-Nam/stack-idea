@@ -1,5 +1,4 @@
 const fs = require('fs');
-const process = require('process');
 const path = require('path');
 
 const {CONFIG} = require('./config');
@@ -7,14 +6,14 @@ const {CONFIG} = require('./config');
 const CONFIGLIST = path.join(__dirname, '..', '.stackconfigfile');
 const STORELIST = path.join(__dirname, '..', '.stackfile');
 
+/**
+ * Add row to list of files.
+ *
+ * @param {string} file - Name of file
+ * @param {string} fileName - Name of path
+ */
 exports.addRow = (file, fileName) => {
-	let listFile = '';
-
-	if (file === CONFIG) {
-		listFile = CONFIGLIST;
-	} else {
-		listFile = STORELIST;
-	}
+	const listFile = file === CONFIG ? CONFIGLIST : STORELIST;
 
 	let list = fs.readFileSync(listFile, 'utf8');
 
@@ -28,16 +27,15 @@ exports.addRow = (file, fileName) => {
 	fs.writeFileSync(listFile, list, 'utf8');
 };
 
+/**
+ * Delete all file in list of file.
+ *
+ * @param {string} file - Name of file
+ */
 exports.deleteAllRow = file => {
-	let listFile = '';
+	const listFile = file === CONFIG ? CONFIGLIST : STORELIST;
 
-	if (file === CONFIG) {
-		listFile = CONFIGLIST;
-	} else {
-		listFile = STORELIST;
-	}
-
-	let list = fs.readFileSync(listFile, 'utf8');
+	const list = fs.readFileSync(listFile, 'utf8');
 	const listArray = list.split('\n');
 
 	for (const path of listArray) {

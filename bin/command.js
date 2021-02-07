@@ -4,7 +4,7 @@ const chalk = require('chalk');
 
 const {tableConfig} = require('./config');
 const version = require('./version');
-const {checkOneOrManyByProperty, checkOneOrManyByValue, tickOneOrManyByProperty, tickOneOrManyByValue, checkDeepProperty, tick, isManipulate} = require('./utils');
+const {checkOneOrManyByProperty, checkOneOrManyByValue, tickOneOrManyByProperty, tickOneOrManyByValue, checkDeepProperty, tickSymbolByState, isManipulate} = require('./utils');
 const {checkFuzzy, tickFuzzy} = require('./search');
 
 const table = new Table(tableConfig);
@@ -12,62 +12,101 @@ const table = new Table(tableConfig);
 const manipulateStackConfig = ['add-item', 'remove-item', 'get-row', 'add-row', 'remove-row', 'hide-row', 'show-row', 'get-all'];
 const manipulateStack = ['tick', 'untick', 'remove', 'show'];
 
-const checkOneState = (result, states) => {
-	if (checkOneOrManyByProperty(result, states)) {
+/**
+ * Check name exist in stack.
+ *
+ * @param {Object} stack - Store stack
+ * @param {string[]} states - Store items
+ * @return {boolean}
+ */
+const checkOneState = (stack, states) => {
+	if (checkOneOrManyByProperty(stack, states)) {
 		return true;
 	}
 
-	if (checkOneOrManyByValue(result, states)) {
+	if (checkOneOrManyByValue(stack, states)) {
 		return true;
 	}
 
-	if (typeof states === 'string' && checkFuzzy(result, states)) {
+	if (typeof states === 'string' && checkFuzzy(stack, states)) {
 		return true;
 	}
 
 	return false;
 };
 
-const tickOneState = async (result, states, state) => {
+/**
+ * Tick item.
+ *
+ * @param {Object} stack - Store stack
+ * @param {(string | string[])} states - List of items
+ * @param {string} state - Name of state
+ * @return {Object}
+ */
+const tickOneState = async (stack, states, state) => {
 	let found = 0;
-	if (checkOneOrManyByProperty(result, states)) {
+	if (checkOneOrManyByProperty(stack, states)) {
 		found++;
-		tickOneOrManyByProperty(result, states, state);
+		tickOneOrManyByProperty(stack, states, state);
 	}
 
-	if (checkOneOrManyByValue(result, states)) {
+	if (checkOneOrManyByValue(stack, states)) {
 		if (typeof states === 'string' && found === 0) {
-			tickOneOrManyByValue(result, states, state);
+			tickOneOrManyByValue(stack, states, state);
 		} else if (Array.isArray(states)) {
-			tickOneOrManyByValue(result, states, state);
+			tickOneOrManyByValue(stack, states, state);
 		}
 	}
 
-	if (typeof states === 'string' && found === 0 && checkFuzzy(result, states)) {
-		await	tickFuzzy(result, states, state);
+	if (typeof states === 'string' && found === 0 && checkFuzzy(stack, states)) {
+		await	tickFuzzy(stack, states, state);
 	}
 
-	return result;
+	return stack;
 };
 
-exports.checkAllState = (result, ticks, unticks, removes) => {
-	return checkOneState(result, ticks) || checkOneState(result, unticks) || checkOneState(result, removes);
+/**
+ * Check all items from command exist.
+ *
+ * @param {Object} stack - Store stack
+ * @param {string[]} ticks - Store items need to check
+ * @param {string[]} unticks - Store items need to uncheck
+ * @param {string[]} removes - Store items need to remove
+ * @return {boolean}
+ */
+exports.checkAllState = (stack, ticks, unticks, removes) => {
+	return checkOneState(stack, ticks) || checkOneState(stack, unticks) || checkOneState(stack, removes);
 };
 
-exports.tickAllState = async (result, ticks, unticks, removes) => {
-	result = await tickOneState(result, ticks, 'tick');
-	result = await tickOneState(result, unticks, 'untick');
-	result = await tickOneState(result, removes, 'remove');
-	return result;
+/**
+ * Tick all items from command.
+ *
+ * @param {Object} stack - Store stack
+ * @param {string[]} ticks - Store items need to check
+ * @param {string[]} unticks - Store items need to uncheck
+ * @param {string[]} removes - Store items need to remove
+ * @return {Object]
+ */
+exports.tickAllState = async (stack, ticks, unticks, removes) => {
+	stack = await tickOneState(stack, ticks, 'tick');
+	stack = await tickOneState(stack, unticks, 'untick');
+	stack = await tickOneState(stack, removes, 'remove');
+	return stack;
 };
 
-exports.showTable = (result, all) => {
-	for (let tech in result) {
-		if (checkDeepProperty(result, tech)) {
-			const line = result[tech];
+/**
+ * Display stack as table.
+ *
+ * @param {Object} stack - Store stack
+ * @param {boolean} isAll - Show all stack even remove one
+ */
+exports.showTable = (stack, isAll) => {
+	for (let tech in stack) {
+		if (checkDeepProperty(stack, tech)) {
+			const line = stack[tech];
 			let name = line.Name;
 
-			if ((all || line.Tick !== 'remove') && name !== 'None') {
+			if ((isAll || line.Tick !== 'remove') && name !== 'None') {
 				if (line.Tick === 'remove') {
 					tech = chalk.gray(tech);
 					name = chalk.gray(line.Name);
@@ -80,7 +119,7 @@ exports.showTable = (result, all) => {
 				}
 
 				table.push({
-					[tech]: [name, tick(line.Tick)]
+					[tech]: [name, tickSymbolByState(line.Tick)]
 				});
 			}
 		}
@@ -89,14 +128,38 @@ exports.showTable = (result, all) => {
 	console.log(table.toString());
 };
 
+/**
+ * Check command manipulate config file.
+ *
+ * @param {Object} args - Argument of command
+ * @return {boolean}
+ */
 exports.isManipulateStackConfig = args =>
 	isManipulate(args, manipulateStackConfig);
 
+/**
+ * Check command manipulate stack file.
+ *
+ * @param {Object} args - Argument of command
+ * @return {boolean]
+ */
 exports.isManipulateStack = args =>
 	isManipulate(args, manipulateStack);
 
+/**
+ * Information of command.
+ *
+ * @param {string} alias - Alias of command
+ * @param {string} mean - Explain command
+ * @param {number} pad - Maximum length of command name
+ */
 const helpCommand = (alias, mean, pad) => console.log(' ', alias.padEnd(pad), mean);
 
+/**
+ * Show help.
+ *
+ * @param {boolean} isHelp - Check command call by help comman
+ */
 exports.help = isHelp => {
 	if (!isHelp) {
 		console.log(chalk.yellow('\nMake sure you use right options list below:'));
@@ -130,4 +193,7 @@ exports.help = isHelp => {
 	console.log('  $ stack --generate --show');
 };
 
+/**
+ * Show current version.
+ */
 exports.version = () => console.log(version);

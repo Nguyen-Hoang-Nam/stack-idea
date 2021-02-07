@@ -38,6 +38,12 @@ exports.fuseConfig = {
 	]
 };
 
+/**
+ * Generate config for search.
+ *
+ * @param {string} message - Question ask user to choose
+ * @param {object[]} choices - List of options
+ */
 exports.searchPromptConfig = (message, choices) => ([
 	{
 		type: 'list',

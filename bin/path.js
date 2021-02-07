@@ -10,6 +10,14 @@ const {addRow} = require('./pointer');
 const GLOBALPATH = path.join(__dirname, '..');
 const LOCALPATH = '.';
 
+/**
+ * Generate extension base on type.
+ *
+ * @param {string} file - Name of file
+ * @param {string} type - Name of file type
+ * @param {boolean} global - Check global file
+ * @return {string}
+ */
 const getExtension = (file, type, global) => {
 	let ext = '';
 
@@ -24,6 +32,14 @@ const getExtension = (file, type, global) => {
 	return ext;
 };
 
+/**
+ * Generate path of file.
+ *
+ * @param {string} file - Name of file
+ * @param {string} type - Name of file type
+ * @param {boolean} global - Check global file
+ * @return {string}
+ */
 const getPath = (file, type, global) => {
 	const stackConfigDirectory = global ? GLOBALPATH : LOCALPATH;
 	const stackConfigPath = `${stackConfigDirectory}/${file}.${type}`;
@@ -31,6 +47,13 @@ const getPath = (file, type, global) => {
 	return stackConfigPath;
 };
 
+/**
+ * Read file with options.
+ *
+ * @param {string} file - Name of file
+ * @param {Object} args - Argument of command
+ * @param {function} callback
+ */
 exports.readFile = (file, args, callback) => {
 	let type = getExtension(file, args.input, args.global);
 
@@ -58,6 +81,13 @@ exports.readFile = (file, args, callback) => {
 	}
 };
 
+/**
+ * Write file with options.
+ *
+ * @param {string} file - Name of file
+ * @param {Object} object - Store stack
+ * @param {Object} args - Arguments of command
+ */
 exports.writeFile = (file, object, args) => {
 	if (args.show) {
 		showTable(object, args.all);

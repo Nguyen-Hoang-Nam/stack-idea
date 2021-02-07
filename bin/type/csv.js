@@ -3,6 +3,12 @@ const {convertCSVToArray} = require('convert-csv-to-array');
 
 const {checkProperty} = require('../utils');
 
+/**
+ * Convert stack to array of object.
+ *
+ * @param {Object} stack - Store stack
+ * @return {Object[]}
+ */
 const stackToArrayObject = stack => {
 	const stackArray = [];
 
@@ -21,6 +27,12 @@ const stackToArrayObject = stack => {
 	return stackArray;
 };
 
+/**
+ * Convert array object to stack.
+ *
+ * @param {Object[]} data - Array object from csv file
+ * @return {Object}
+ */
 const arrayObjectToStack = data => {
 	const stack = {};
 
@@ -34,6 +46,13 @@ const arrayObjectToStack = data => {
 	return stack;
 };
 
+/**
+ * Write file to csv.
+ *
+ * @param {Object} stack - Store stack
+ * @param {string} separator - Separator in csv
+ * @return {string}
+ */
 exports.write = (stack, separator = ',') => {
 	const data = stackToArrayObject(stack, {
 		separator
@@ -43,6 +62,13 @@ exports.write = (stack, separator = ',') => {
 	return csv;
 };
 
+/**
+ * Read csv file.
+ *
+ * @param {string} buffer - Buffer from csv file
+ * @param {string} separator - Separator in csv
+ * @return {Object}
+ */
 exports.read = (buffer, separator = ',') => {
 	const csv = buffer.toString();
 

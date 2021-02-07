@@ -1,6 +1,6 @@
 const test = require('ava');
 const stripAnsi = require('strip-ansi');
-const {tick, tickOneOrManyByProperty, tickOneOrManyByValue, checkOneOrManyByProperty, checkOneOrManyByValue, checkDeepProperty, getPropertyPath, getPathComponent, stackToFuseArray, searchResultToInquirerChoices} = require('../bin/utils');
+const {tickSymbolByState, tickOneOrManyByProperty, tickOneOrManyByValue, checkOneOrManyByProperty, checkOneOrManyByValue, checkDeepProperty, getPropertyPath, getPathComponent, stackToFuseArray, searchResultToInquirerChoices} = require('../bin/utils');
 
 const data = {
 	Render: {
@@ -19,7 +19,7 @@ const data = {
 
 // Manipulate stack fie
 test('Show tick icon', t => {
-	t.true(stripAnsi(tick('tick')) === '✔' || stripAnsi(tick('tick')) === '√');
+	t.true(stripAnsi(tickSymbolByState('tick')) === '✔' || stripAnsi(tickSymbolByState('tick')) === '√');
 });
 
 test('Tick one row by property', t => {
