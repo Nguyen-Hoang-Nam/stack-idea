@@ -2,7 +2,7 @@ const test = require('ava');
 const stripAnsi = require('strip-ansi');
 const {tickSymbolByState, tickOneOrManyByProperty, tickOneOrManyByValue, checkOneOrManyByProperty, checkOneOrManyByValue, checkDeepProperty, getPropertyPath, getPathComponent, stackToFuseArray, searchResultToInquirerChoices} = require('../bin/utils');
 
-const data = {
+const stack = {
 	Render: {
 		Name: 'Client-Side',
 		Tick: 'untick'
@@ -23,7 +23,7 @@ test('Show tick icon', t => {
 });
 
 test('Tick one row by property', t => {
-	t.deepEqual(tickOneOrManyByProperty(data, 'API', 'tick'), {
+	t.deepEqual(tickOneOrManyByProperty(stack, 'API', 'tick'), {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'untick'
@@ -40,7 +40,7 @@ test('Tick one row by property', t => {
 });
 
 test('Tick many rows by property', t => {
-	t.deepEqual(tickOneOrManyByProperty(data, ['API', 'JS Framework'], 'remove'), {
+	t.deepEqual(tickOneOrManyByProperty(stack, ['API', 'JS Framework'], 'remove'), {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'untick'
@@ -57,7 +57,7 @@ test('Tick many rows by property', t => {
 });
 
 test('Tick one row by value', t => {
-	t.deepEqual(tickOneOrManyByValue(data, 'REST', 'tick'), {
+	t.deepEqual(tickOneOrManyByValue(stack, 'REST', 'tick'), {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'untick'
@@ -74,7 +74,7 @@ test('Tick one row by value', t => {
 });
 
 test('Tick many rows by value', t => {
-	t.deepEqual(tickOneOrManyByValue(data, ['Client-Side', 'Vue'], 'tick'), {
+	t.deepEqual(tickOneOrManyByValue(stack, ['Client-Side', 'Vue'], 'tick'), {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'tick'
@@ -91,19 +91,19 @@ test('Tick many rows by value', t => {
 });
 
 test('Check property exist', t => {
-	t.is(checkOneOrManyByProperty(data, 'API'), true);
+	t.is(checkOneOrManyByProperty(stack, 'API'), true);
 });
 
 test('Check properties exist', t => {
-	t.is(checkOneOrManyByProperty(data, ['API', 'JS Framework']), true);
+	t.is(checkOneOrManyByProperty(stack, ['API', 'JS Framework']), true);
 });
 
 test('Check value exist', t => {
-	t.is(checkOneOrManyByValue(data, 'REST'), true);
+	t.is(checkOneOrManyByValue(stack, 'REST'), true);
 });
 
 test('Check values exist', t => {
-	t.is(checkOneOrManyByValue(data, ['Client-Side', 'Vue']), true);
+	t.is(checkOneOrManyByValue(stack, ['Client-Side', 'Vue']), true);
 });
 
 // Search
@@ -124,7 +124,7 @@ const fuseArray = [
 ];
 
 test('Convert stack object to fuse array', t => {
-	t.deepEqual(stackToFuseArray(data), fuseArray);
+	t.deepEqual(stackToFuseArray(stack), fuseArray);
 });
 
 const fuseResult = [

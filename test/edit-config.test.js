@@ -1,6 +1,6 @@
 const test = require('ava');
 
-const {addItem, removeItem, addRow, removeRow} = require('../bin/manipulate');
+const editConfig = require('../bin/stackConfig/edit');
 
 const data = {
 	Render: [
@@ -30,7 +30,7 @@ const data = {
 };
 
 test('Add item to stack-config', t => {
-	t.deepEqual(addItem(data, 'GraphQL Framework', 'Apollo'), {
+	t.deepEqual(editConfig.addItem(data, 'GraphQL Framework', 'Apollo'), {
 		Render: [
 			{
 				Name: 'Server-Side'
@@ -60,7 +60,7 @@ test('Add item to stack-config', t => {
 });
 
 test('Remove item from stack-config', t => {
-	t.deepEqual(removeItem(data, 'GraphQL Framework', 'Relay'), {
+	t.deepEqual(editConfig.removeItem(data, 'GraphQL Framework', 'Relay'), {
 		Render: [
 			{
 				Name: 'Server-Side'
@@ -89,7 +89,7 @@ test('Remove item from stack-config', t => {
 });
 
 test('Add row to stack-config', t => {
-	t.deepEqual(addRow(data, 'Test', ['Jest', 'Ava']), {
+	t.deepEqual(editConfig.addRow(data, 'Test', ['Jest', 'Ava']), {
 		Render: [
 			{
 				Name: 'Server-Side'
@@ -119,7 +119,7 @@ test('Add row to stack-config', t => {
 });
 
 test('Remove row to stack-config', t => {
-	t.deepEqual(removeRow(data, 'API'), {
+	t.deepEqual(editConfig.removeRow(data, 'API'), {
 		Render: [
 			{
 				Name: 'Server-Side'

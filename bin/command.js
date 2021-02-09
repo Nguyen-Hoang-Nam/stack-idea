@@ -1,16 +1,12 @@
-
 const Table = require('cli-table');
 const chalk = require('chalk');
 
-const {tableConfig} = require('./config');
+const config = require('./config');
 const version = require('./version');
-const {checkOneOrManyByProperty, checkOneOrManyByValue, tickOneOrManyByProperty, tickOneOrManyByValue, checkDeepProperty, tickSymbolByState, isManipulate} = require('./utils');
-const {checkFuzzy, tickFuzzy} = require('./search');
+const utils = require('./utils');
+const search = require('./search');
 
-const table = new Table(tableConfig);
-
-const manipulateStackConfig = ['add-item', 'remove-item', 'get-row', 'add-row', 'remove-row', 'hide-row', 'show-row', 'get-all'];
-const manipulateStack = ['tick', 'untick', 'remove', 'show'];
+const table = new Table(config.tableConfig);
 
 /**
  * Check name exist in stack.
@@ -20,20 +16,22 @@ const manipulateStack = ['tick', 'untick', 'remove', 'show'];
  * @return {boolean}
  */
 const checkOneState = (stack, states) => {
-	if (checkOneOrManyByProperty(stack, states)) {
+	if (utils.checkOneOrManyByProperty(stack, states)) {
 		return true;
 	}
 
-	if (checkOneOrManyByValue(stack, states)) {
+	if (utils.checkOneOrManyByValue(stack, states)) {
 		return true;
 	}
 
-	if (typeof states === 'string' && checkFuzzy(stack, states)) {
+	if (typeof states === 'string' && search.checkFuzzy(stack, states)) {
 		return true;
 	}
 
 	return false;
 };
+
+exports.checkOneState = checkOneState;
 
 /**
  * Tick item.
@@ -45,22 +43,50 @@ const checkOneState = (stack, states) => {
  */
 const tickOneState = async (stack, states, state) => {
 	let found = 0;
-	if (checkOneOrManyByProperty(stack, states)) {
+	if (utils.checkOneOrManyByProperty(stack, states)) {
 		found++;
-		tickOneOrManyByProperty(stack, states, state);
+		utils.tickOneOrManyByProperty(stack, states, state);
 	}
 
-	if (checkOneOrManyByValue(stack, states)) {
+	if (utils.checkOneOrManyByValue(stack, states)) {
 		if (typeof states === 'string' && found === 0) {
-			tickOneOrManyByValue(stack, states, state);
+			utils.tickOneOrManyByValue(stack, states, state);
 		} else if (Array.isArray(states)) {
-			tickOneOrManyByValue(stack, states, state);
+			utils.tickOneOrManyByValue(stack, states, state);
 		}
+
+		found++;
 	}
 
-	if (typeof states === 'string' && found === 0 && checkFuzzy(stack, states)) {
-		await	tickFuzzy(stack, states, state);
+	if (typeof states === 'string' && found === 0 && search.checkFuzzy(stack, states)) {
+		await	search.tickFuzzy(stack, states, state);
 	}
+
+	return stack;
+};
+
+exports.tickOneState = tickOneState;
+
+/**
+ * Untick all row except remove.
+ *
+ * @param {Object} stack - Store stack
+ * @return {Object}
+ */
+exports.untickAll = stack => {
+	utils.convertState(stack, 'tick', 'untick');
+
+	return stack;
+};
+
+/**
+ * Untick all remove rows.
+ *
+ * @param {Object} stack - Store stack
+ * @return {Object}
+ */
+exports.unremoveAll = stack => {
+	utils.convertState(stack, 'remove', 'untick');
 
 	return stack;
 };
@@ -102,11 +128,11 @@ exports.tickAllState = async (stack, ticks, unticks, removes) => {
  */
 exports.showTable = (stack, isAll) => {
 	for (let tech in stack) {
-		if (checkDeepProperty(stack, tech)) {
+		if (utils.checkDeepProperty(stack, tech)) {
 			const line = stack[tech];
 			let name = line.Name;
 
-			if ((isAll || line.Tick !== 'remove') && name !== 'None') {
+			if (isAll || (line.Tick !== 'remove' && name !== 'None')) {
 				if (line.Tick === 'remove') {
 					tech = chalk.gray(tech);
 					name = chalk.gray(line.Name);
@@ -119,13 +145,30 @@ exports.showTable = (stack, isAll) => {
 				}
 
 				table.push({
-					[tech]: [name, tickSymbolByState(line.Tick)]
+					[tech]: [name, utils.tickSymbolByState(line.Tick)]
 				});
 			}
 		}
 	}
 
-	console.log(table.toString());
+	return table;
+};
+
+/**
+ * Get state.
+ *
+ * @param {Object} stack - Store stack
+ * @param {string} row - Name of stack
+ * @return {Object}
+ */
+exports.getState = (stack, row) => {
+	if (utils.checkProperty(stack, row)) {
+		table.push({
+			[row]: [stack[row].Name, stack[row].Tick]
+		});
+	}
+
+	return table;
 };
 
 /**
@@ -135,7 +178,7 @@ exports.showTable = (stack, isAll) => {
  * @return {boolean}
  */
 exports.isManipulateStackConfig = args =>
-	isManipulate(args, manipulateStackConfig);
+	utils.isManipulate(args, config.manipulateStackConfig);
 
 /**
  * Check command manipulate stack file.
@@ -144,7 +187,7 @@ exports.isManipulateStackConfig = args =>
  * @return {boolean]
  */
 exports.isManipulateStack = args =>
-	isManipulate(args, manipulateStack);
+	utils.isManipulate(args, config.manipulateStack);
 
 /**
  * Information of command.

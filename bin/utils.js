@@ -245,6 +245,24 @@ exports.tickOneOrManyByValue = (stack, value, state) => {
 };
 
 /**
+ * Convert old state of row to new state.
+ *
+ * @param {Object} stack - Store stack
+ * @param {string} oldState - Old state of row
+ * @param {string} newState - New state of row
+ * @return {Object}
+ */
+exports.convertState = (stack, oldState, newState) => {
+	for (const row in stack) {
+		if (checkProperty(stack, row) && stack[row].Tick === oldState) {
+			stack[row].Tick = newState;
+		}
+	}
+
+	return stack;
+};
+
+/**
  * Check properties exist in stack.
  *
  * @param {Object} stack - Store stack

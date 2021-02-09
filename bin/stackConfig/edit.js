@@ -1,4 +1,4 @@
-const {getPathComponent, checkDeepProperty, getPropertyPath, remove, removeAll} = require('./utils');
+const utils = require('../utils');
 
 /**
  * Add tech to stack config.
@@ -9,9 +9,9 @@ const {getPathComponent, checkDeepProperty, getPropertyPath, remove, removeAll} 
  * @return {Obbject}
  */
 exports.addItem = (config, property, value) => {
-	if (checkDeepProperty(config, property)) {
-		const path = getPropertyPath(config, property);
-		const component = getPathComponent(path);
+	if (utils.checkDeepProperty(config, property)) {
+		const path = utils.getPropertyPath(config, property);
+		const component = utils.getPathComponent(path);
 
 		let row = config;
 		for (const element of component) {
@@ -37,9 +37,9 @@ exports.addItem = (config, property, value) => {
  * @param {string} property - Name of stack
  */
 exports.getRow = (config, property) => {
-	if (checkDeepProperty(config, property)) {
-		const path = getPropertyPath(config, property);
-		const component = getPathComponent(path);
+	if (utils.checkDeepProperty(config, property)) {
+		const path = utils.getPropertyPath(config, property);
+		const component = utils.getPathComponent(path);
 
 		let row = config;
 		for (const element of component) {
@@ -59,9 +59,9 @@ exports.getRow = (config, property) => {
  * @return {Object}
  */
 exports.removeItem = (config, property, value) => {
-	if (checkDeepProperty(config, property)) {
-		const path = getPropertyPath(config, property);
-		const component = getPathComponent(path);
+	if (utils.checkDeepProperty(config, property)) {
+		const path = utils.getPropertyPath(config, property);
+		const component = utils.getPathComponent(path);
 
 		let row = config;
 		for (const element of component) {
@@ -69,9 +69,9 @@ exports.removeItem = (config, property, value) => {
 		}
 
 		if (typeof value === 'string') {
-			remove(row, value);
+			utils.remove(row, value);
 		} else if (Array.isArray(value)) {
-			removeAll(row, value);
+			utils.removeAll(row, value);
 		}
 	}
 
@@ -87,7 +87,7 @@ exports.removeItem = (config, property, value) => {
  * @return {Object}
  */
 exports.addRow = (config, property, value) => {
-	if (!checkDeepProperty(config, property)) {
+	if (!utils.checkDeepProperty(config, property)) {
 		if (typeof value === 'string') {
 			config[property] = [value];
 		} else if (Array.isArray(value)) {
@@ -106,9 +106,9 @@ exports.addRow = (config, property, value) => {
  * @return {Object}
  */
 exports.removeRow = (config, property) => {
-	if (checkDeepProperty(config, property)) {
-		const path = getPropertyPath(config, property);
-		const component = getPathComponent(path);
+	if (utils.checkDeepProperty(config, property)) {
+		const path = utils.getPropertyPath(config, property);
+		const component = utils.getPathComponent(path);
 
 		if (component.length === 1) {
 			delete config[property];
@@ -133,7 +133,7 @@ exports.removeRow = (config, property) => {
  * @param {string} property - Name of stack
  */
 exports.hiddenRow = (config, property) => {
-	if (checkDeepProperty(config, property)) {
+	if (utils.checkDeepProperty(config, property)) {
 		config.Hidden.push(property);
 	}
 };
@@ -145,8 +145,8 @@ exports.hiddenRow = (config, property) => {
  * @param {string} property - Name of stack
  */
 exports.showRow = (config, property) => {
-	if (checkDeepProperty(config, property) && config.Hidden.includes(property)) {
-		remove(config.Hidden, property);
+	if (utils.checkDeepProperty(config, property) && config.Hidden.includes(property)) {
+		utils.remove(config.Hidden, property);
 	}
 };
 

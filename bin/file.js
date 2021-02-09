@@ -90,7 +90,9 @@ exports.readFile = (file, args, callback) => {
  */
 exports.writeFile = (file, object, args) => {
 	if (args.show) {
-		showTable(object, args.all);
+		const table = showTable(object, args.all);
+
+		console.log(table.toString());
 	}
 
 	const type = getExtension(file, args.output, args.global);

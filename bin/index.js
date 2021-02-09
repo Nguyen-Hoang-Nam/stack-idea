@@ -3,62 +3,65 @@
 const minimist = require('minimist');
 
 const {generate} = require('./generate');
-const {tickAllState, checkAllState, help, showTable, version, isManipulateStack, isManipulateStackConfig} = require('./command');
-const {minimistConfig, CONFIG, STORE} = require('./config');
-const {readFile, writeFile} = require('./path.js');
-const {addItem, removeItem, getRow, addRow, removeRow, hiddenRow, showRow, getAll} = require('./manipulate');
-const {successGenerate} = require('./message');
+const command = require('./command');
+const config = require('./config');
+const file = require('./file');
+const editConfig = require('./stackConfig/edit');
+const message = require('./message');
 
-const args = minimist(process.argv.slice(2), minimistConfig);
+const args = minimist(process.argv.slice(2), config.minimistConfig);
 
 if (args.generate) {
-	readFile(CONFIG, args, techs => {
+	file.readFile(config.CONFIG, args, techs => {
 		const result = generate(techs, {}, techs.Hidden);
-		const fileName = typeof args.generate === 'string' ? args.generate : STORE;
+		const fileName = typeof args.generate === 'string' ? args.generate : config.STORE;
 
-		writeFile(fileName, result, args);
+		file.writeFile(fileName, result, args);
 
 		if (!args.show) {
-			successGenerate();
+			message.successGenerate();
 		}
 	});
-} else if (isManipulateStackConfig(args)) {
-	readFile(CONFIG, args, techs => {
+} else if (command.isManipulateStackConfig(args)) {
+	file.readFile(config.CONFIG, args, techs => {
 		if (args['add-item']) {
-			addItem(techs, args['add-item'], args.item);
+			editConfig.addItem(techs, args['add-item'], args.item);
 		} else if (args['remove-item']) {
-			removeItem(techs, args['remove-item'], args.item);
+			editConfig.removeItem(techs, args['remove-item'], args.item);
 		} else if (args['get-row']) {
-			getRow(techs, args['get-row']);
+			editConfig.getRow(techs, args['get-row']);
 		} else if (args['add-row']) {
-			addRow(techs, args['add-row'], args.item);
+			editConfig.addRow(techs, args['add-row'], args.item);
 		} else if (args['remove-row']) {
-			removeRow(techs, args['remove-row']);
+			editConfig.removeRow(techs, args['remove-row']);
 		} else if (args['hide-row']) {
-			hiddenRow(techs, args['hide-row']);
+			editConfig.hiddenRow(techs, args['hide-row']);
 		} else if (args['show-row']) {
-			showRow(techs, args['show-row']);
+			editConfig.showRow(techs, args['show-row']);
 		} else if (args['get-all']) {
-			getAll(techs);
+			editConfig.getAll(techs);
 		}
 
-		writeFile(CONFIG, techs, args);
+		file.writeFile(config.CONFIG, techs, args);
 	});
-} else if (isManipulateStack(args)) {
-	const fileName = typeof args.show === 'string' ? args.show : STORE;
+} else if (command.isManipulateStack(args)) {
+	const fileName = typeof args.show === 'string' ? args.show : config.STORE;
 
-	readFile(fileName, args, result => {
-		if (checkAllState(result, args.tick, args.untick, args.remove)) {
-			tickAllState(result, args.tick, args.untick, args.remove)
+	file.readFile(fileName, args, result => {
+		if (command.checkAllState(result, args.tick, args.untick, args.remove)) {
+			command.tickAllState(result, args.tick, args.untick, args.remove)
 				.then(() => {
-					writeFile(STORE, result, args);
+					file.writeFile(config.STORE, result, args);
 				});
 		} else if (args.show) {
-			showTable(result, args.all);
+			const table = command.showTable(result, args.all);
+			console.log(table.toString());
+		} else if (args['get-state']) {
+			command.getState(result, args['get-state']);
 		}
 	});
 } else if (args.version) {
-	version();
+	command.version();
 } else {
-	help(args.help);
+	command.help(args.help);
 }
