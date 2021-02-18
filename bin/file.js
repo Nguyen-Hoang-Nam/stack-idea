@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const {noStackConfig} = require('./message');
 const {showTable} = require('./command');
-const {extension} = require('./config');
+const {extension} = require('./global');
 const {read, write} = require('./type');
 const {addRow} = require('./pointer');
 

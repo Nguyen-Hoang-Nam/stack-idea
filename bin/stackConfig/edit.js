@@ -8,7 +8,7 @@ const utils = require('../utils');
  * @param {(string | string[])} value - Items to add
  * @return {Obbject}
  */
-exports.addItem = (config, property, value) => {
+const addItem = (config, property, value) => {
 	if (utils.checkDeepProperty(config, property)) {
 		const path = utils.getPropertyPath(config, property);
 		const component = utils.getPathComponent(path);
@@ -30,13 +30,15 @@ exports.addItem = (config, property, value) => {
 	return config;
 };
 
+exports.addItem = addItem;
+
 /**
  * Print row of config to screen.
  *
  * @param {Object} config - Store config
  * @param {string} property - Name of stack
  */
-exports.getRow = (config, property) => {
+const getRow = (config, property) => {
 	if (utils.checkDeepProperty(config, property)) {
 		const path = utils.getPropertyPath(config, property);
 		const component = utils.getPathComponent(path);
@@ -50,6 +52,8 @@ exports.getRow = (config, property) => {
 	}
 };
 
+exports.getRow = getRow;
+
 /**
  * Remove item in stack config.
  *
@@ -58,7 +62,7 @@ exports.getRow = (config, property) => {
  * @param {(string | string[])} value - Name of item
  * @return {Object}
  */
-exports.removeItem = (config, property, value) => {
+const removeItem = (config, property, value) => {
 	if (utils.checkDeepProperty(config, property)) {
 		const path = utils.getPropertyPath(config, property);
 		const component = utils.getPathComponent(path);
@@ -78,6 +82,8 @@ exports.removeItem = (config, property, value) => {
 	return config;
 };
 
+exports.removeItem = removeItem;
+
 /**
  * Add stack to config.
  *
@@ -86,7 +92,7 @@ exports.removeItem = (config, property, value) => {
  * @param {(string | string[])} value - List of item
  * @return {Object}
  */
-exports.addRow = (config, property, value) => {
+const addRow = (config, property, value) => {
 	if (!utils.checkDeepProperty(config, property)) {
 		if (typeof value === 'string') {
 			config[property] = [value];
@@ -98,6 +104,8 @@ exports.addRow = (config, property, value) => {
 	return config;
 };
 
+exports.addRow = addRow;
+
 /**
  * Remove stack from config.
  *
@@ -105,7 +113,7 @@ exports.addRow = (config, property, value) => {
  * @param {string} property - Name of stack
  * @return {Object}
  */
-exports.removeRow = (config, property) => {
+const removeRow = (config, property) => {
 	if (utils.checkDeepProperty(config, property)) {
 		const path = utils.getPropertyPath(config, property);
 		const component = utils.getPathComponent(path);
@@ -126,17 +134,21 @@ exports.removeRow = (config, property) => {
 	return config;
 };
 
+exports.removeRow = removeRow;
+
 /**
  * Hide stack in config.
  *
  * @param {Object} config - Store config
  * @param {string} property - Name of stack
  */
-exports.hiddenRow = (config, property) => {
+const hiddenRow = (config, property) => {
 	if (utils.checkDeepProperty(config, property)) {
 		config.Hidden.push(property);
 	}
 };
+
+exports.hiddenRow = hiddenRow;
 
 /**
  * Show hidden stack in config.
@@ -144,16 +156,42 @@ exports.hiddenRow = (config, property) => {
  * @param {Object} config - Store config
  * @param {string} property - Name of stack
  */
-exports.showRow = (config, property) => {
+const showRow = (config, property) => {
 	if (utils.checkDeepProperty(config, property) && config.Hidden.includes(property)) {
 		utils.remove(config.Hidden, property);
 	}
 };
+
+exports.showRow = showRow;
 
 /**
  * Print confi to screen.
  *
  * @param {Object} config - Store config
  */
-exports.getAll = config =>
+const getAll = config =>
 	console.log(config);
+
+exports.getAll = getAll;
+
+exports.editCommand = (config, args) => {
+	if (args['add-item']) {
+		addItem(config, args['add-item'], args.item);
+	} else if (args['remove-item']) {
+		removeItem(config, args['remove-item'], args.item);
+	} else if (args['get-row']) {
+		getRow(config, args['get-row']);
+	} else if (args['add-row']) {
+		addRow(config, args['add-row'], args.item);
+	} else if (args['remove-row']) {
+		removeRow(config, args['remove-row']);
+	} else if (args['hide-row']) {
+		hiddenRow(config, args['hide-row']);
+	} else if (args['show-row']) {
+		showRow(config, args['show-row']);
+	} else if (args['get-all']) {
+		getAll(config);
+	}
+
+	return config;
+};

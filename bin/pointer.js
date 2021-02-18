@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const {CONFIG} = require('./config');
+const {CONFIG} = require('./global');
 
 const CONFIGLIST = path.join(__dirname, '..', '.stackconfigfile');
 const STORELIST = path.join(__dirname, '..', '.stackfile');
