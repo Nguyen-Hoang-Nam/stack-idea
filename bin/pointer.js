@@ -14,8 +14,11 @@ const STORELIST = path.join(__dirname, '..', '.stackfile');
  */
 exports.addRow = (file, fileName) => {
 	const listFile = file === CONFIG ? CONFIGLIST : STORELIST;
+	let list = '';
 
-	let list = fs.readFileSync(listFile, 'utf8');
+	if (fs.existsSync(listFile)) {
+		list = fs.readFileSync(listFile, 'utf8');
+	}
 
 	const dir = process.cwd();
 	const filePath = path.join(dir, fileName);
@@ -34,8 +37,12 @@ exports.addRow = (file, fileName) => {
  */
 exports.deleteAllRow = file => {
 	const listFile = file === CONFIG ? CONFIGLIST : STORELIST;
+	let list = '';
 
-	const list = fs.readFileSync(listFile, 'utf8');
+	if (fs.existsSync(listFile)) {
+		list = fs.readFileSync(listFile, 'utf8');
+	}
+
 	const listArray = list.split('\n');
 
 	for (const path of listArray) {
