@@ -1,8 +1,8 @@
 const Fuse = require('fuse.js');
 
-const {fuseConfig} = require('./config');
+const {fuseConfig} = require('./global');
 const {searchResultPrompt} = require('./prompt');
-const {stackToFuseArray, searchResultToInquirerChoices, tickOneOrManyByProperty} = require('./utils');
+const utils = require('./utils');
 
 /**
  * Check key exist by fuzzy search in stack.
@@ -12,7 +12,7 @@ const {stackToFuseArray, searchResultToInquirerChoices, tickOneOrManyByProperty}
  * @return {boolean}
  */
 exports.checkFuzzy = (stack, key) => {
-	const fuseArray = stackToFuseArray(stack);
+	const fuseArray = utils.stackToFuseArray(stack);
 	const fuse = new Fuse(fuseArray, fuseConfig);
 	const searchResult = fuse.search(key);
 
@@ -32,13 +32,13 @@ exports.checkFuzzy = (stack, key) => {
  * @return {Object}
  */
 exports.tickFuzzy = async (stack, key, state) => {
-	const fuseArray = stackToFuseArray(stack);
+	const fuseArray = utils.stackToFuseArray(stack);
 	const fuse = new Fuse(fuseArray, fuseConfig);
 	const searchResult = fuse.search(key);
 
-	const choices = searchResultToInquirerChoices(searchResult);
+	const choices = utils.searchResultToInquirerChoices(searchResult);
 	const chooseResult = await searchResultPrompt(choices, key);
 
-	return tickOneOrManyByProperty(stack, chooseResult.result, state);
+	return utils.tickOneOrManyByProperty(stack, chooseResult.result, state);
 };
 

@@ -9,3 +9,5 @@ stack.yml
 *.ini
 .nyc_output/
 coverage/
+.stackfile
+.stackconfigfile

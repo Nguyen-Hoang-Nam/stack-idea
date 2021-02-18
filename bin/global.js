@@ -61,3 +61,22 @@ exports.extension = {
 	csv: 'csv'
 };
 
+exports.manipulateStackConfig = [
+	'add-item',
+	'remove-item',
+	'get-row',
+	'add-row',
+	'remove-row',
+	'hide-row',
+	'show-row',
+	'get-all'
+];
+
+exports.manipulateStack = [
+	'tick',
+	'untick',
+	'remove',
+	'show',
+	'get-state'
+];
+

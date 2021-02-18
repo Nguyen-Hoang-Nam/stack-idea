@@ -1,5 +1,6 @@
 const YAML = require('js-yaml');
 const CSV = require('./type/csv');
+const TOML = require('@iarna/toml');
 
 /**
  * Write stack to file.
@@ -11,6 +12,10 @@ const CSV = require('./type/csv');
 exports.write = (stack, type) => {
 	if (type === 'yaml') {
 		return YAML.dump(stack);
+	}
+
+	if (type === 'toml') {
+		return TOML.stringify(stack);
 	}
 
 	if (type === 'csv') {
@@ -30,6 +35,10 @@ exports.write = (stack, type) => {
 exports.read = (buffer, type) => {
 	if (type === 'yaml') {
 		return YAML.load(buffer);
+	}
+
+	if (type === 'toml') {
+		return TOML.parse(buffer);
 	}
 
 	if (type === 'csv') {

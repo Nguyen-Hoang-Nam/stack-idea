@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 
-const {searchPromptConfig} = require('./config');
+const {searchPromptConfig} = require('./global');
 
 /**
  * Show search prompt.
