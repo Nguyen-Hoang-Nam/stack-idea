@@ -29,15 +29,15 @@ exports.isManipulateStack = args =>
  * @param {string} mean - Explain command
  * @param {number} pad - Maximum length of command name
  */
-const helpCommand = (alias, mean, pad) => console.log(' ', alias.padEnd(pad), mean);
+const helpCommand = (alias, mean, pad = 24) => console.log(' ', alias.padEnd(pad), mean);
 
 /**
  * Show help.
  *
- * @param {boolean} isHelp - Check command call by help comman
+ * @param {Object} args - Store arguments of command
  */
-exports.help = isHelp => {
-	if (!isHelp) {
+exports.help = args => {
+	if (!args.help) {
 		console.log(chalk.yellow('\nMake sure you use right options list below:'));
 	}
 
@@ -56,14 +56,18 @@ exports.help = isHelp => {
 	helpCommand('-G, --global', 'Use file stack.json in global');
 	helpCommand('-y, --yaml', 'Use yaml file type instead of json');
 	helpCommand('-i, --item ', 'Use to input array of parameter');
-	helpCommand('--add-item', 'Add item to row in stack-config in global');
-	helpCommand('--remove-item', 'Remove item from row in stack-config in global');
-	helpCommand('--get-row', 'Print all items of row in stack-config in global');
-	helpCommand('--add-row', 'Add row to stack-config in global');
-	helpCommand('--remove-row', 'Remove row from stack-config in global');
-	helpCommand('--hide-row', 'Hide row in stack-config in global');
-	helpCommand('--show-row', 'Show row that hide in stack-config in global');
-	helpCommand('--get-all', 'Print stack-config in global');
+
+	if (args.help && args.all) {
+		helpCommand('--add-item', 'Add item to row in stack-config in global');
+		helpCommand('--remove-item', 'Remove item from row in stack-config in global');
+		helpCommand('--get-row', 'Print all items of row in stack-config in global');
+		helpCommand('--add-row', 'Add row to stack-config in global');
+		helpCommand('--remove-row', 'Remove row from stack-config in global');
+		helpCommand('--hide-row', 'Hide row in stack-config in global');
+		helpCommand('--show-row', 'Show row that hide in stack-config in global');
+		helpCommand('--get-all', 'Print stack-config in global');
+	}
+
 	console.log('\n');
 	console.log('Examples: \n');
 	console.log('  $ stack --generate --show');

@@ -52,5 +52,5 @@ if (args.generate) {
 } else if (args.version) {
 	command.version();
 } else {
-	command.help(args.help);
+	command.help(args);
 }

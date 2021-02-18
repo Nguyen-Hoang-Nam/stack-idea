@@ -1,4 +1,5 @@
 const utils = require('../utils');
+const treeify = require('treeify');
 
 /**
  * Add tech to stack config.
@@ -9,7 +10,9 @@ const utils = require('../utils');
  * @return {Obbject}
  */
 const addItem = (config, property, value) => {
-	if (utils.checkDeepProperty(config, property)) {
+	const type = utils.checkEmpty(value);
+
+	if (type && utils.checkDeepProperty(config, property)) {
 		const path = utils.getPropertyPath(config, property);
 		const component = utils.getPathComponent(path);
 
@@ -18,9 +21,9 @@ const addItem = (config, property, value) => {
 			row = row[element];
 		}
 
-		if (typeof value === 'string') {
+		if (type === 1) {
 			row.push(value);
-		} else if (Array.isArray(value)) {
+		} else if (type === 2) {
 			for (const element of value) {
 				row.push(element);
 			}
@@ -63,7 +66,9 @@ exports.getRow = getRow;
  * @return {Object}
  */
 const removeItem = (config, property, value) => {
-	if (utils.checkDeepProperty(config, property)) {
+	const type = utils.checkEmpty(value);
+
+	if (type && utils.checkDeepProperty(config, property)) {
 		const path = utils.getPropertyPath(config, property);
 		const component = utils.getPathComponent(path);
 
@@ -72,9 +77,9 @@ const removeItem = (config, property, value) => {
 			row = row[element];
 		}
 
-		if (typeof value === 'string') {
+		if (type === 1) {
 			utils.remove(row, value);
-		} else if (Array.isArray(value)) {
+		} else if (type === 2) {
 			utils.removeAll(row, value);
 		}
 	}
@@ -93,10 +98,12 @@ exports.removeItem = removeItem;
  * @return {Object}
  */
 const addRow = (config, property, value) => {
-	if (!utils.checkDeepProperty(config, property)) {
-		if (typeof value === 'string') {
+	const type = utils.checkEmpty(value);
+
+	if (type && !utils.checkDeepProperty(config, property)) {
+		if (type === 1) {
 			config[property] = [value];
-		} else if (Array.isArray(value)) {
+		} else if (type === 2) {
 			config[property] = value;
 		}
 	}
@@ -169,8 +176,11 @@ exports.showRow = showRow;
  *
  * @param {Object} config - Store config
  */
-const getAll = config =>
-	console.log(config);
+const getAll = config => {
+	const treeObject = utils.configToTree(config, config.Hidden);
+
+	console.log(treeify.asTree(treeObject, true));
+};
 
 exports.getAll = getAll;
 
