@@ -1,4 +1,4 @@
-const {random, checkDeepProperty} = require('./utils');
+const utils = require('./utils');
 
 /**
  * Check row valid.
@@ -19,8 +19,8 @@ const acceptTech = (hidden, tech) =>
  */
 const generate = (techs, result, hidden) => {
 	for (const tech in techs) {
-		if (checkDeepProperty(techs, tech) && acceptTech(hidden, tech)) {
-			const value = random(techs[tech]);
+		if (utils.checkDeepProperty(techs, tech) && acceptTech(hidden, tech)) {
+			const value = utils.random(techs[tech]);
 
 			if (typeof value === 'string') {
 				result[tech] = {Name: value, Tick: 'untick'};

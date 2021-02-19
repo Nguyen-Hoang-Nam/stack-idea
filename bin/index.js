@@ -21,7 +21,12 @@ if (args.generate) {
 		const stack = generate(config, {}, config.Hidden);
 		const fileName = typeof args.generate === 'string' ? args.generate : global.STORE;
 
-		file.writeFile(fileName, stack, args);
+		if (args.no) {
+			const table = editStack.showTable(stack, args.all);
+			console.log(table.toString());
+		} else {
+			file.writeFile(fileName, stack, args);
+		}
 
 		if (!args.show) {
 			message.successGenerate();
@@ -31,16 +36,29 @@ if (args.generate) {
 	const fileName = typeof args.show === 'string' ? args.show : global.STORE;
 
 	file.readFile(fileName, args, result => {
+		let isShow = false;
+
 		if (editStack.checkAllState(result, args.tick, args.untick, args.remove)) {
+			isShow = true;
+
 			editStack.tickAllState(result, args.tick, args.untick, args.remove)
 				.then(() => {
 					file.writeFile(global.STORE, result, args);
 				});
-		} else if (args.show) {
+		} else if (args['get-state']) {
+			isShow = true;
+
+			const table = editStack.getState(result, args['get-state']);
+			console.log(table.toString());
+		} else if (args['untick-all']) {
+			editStack.untickAll(result);
+		} else if (args['unremove-all']) {
+			editStack.unremoveAll(result);
+		}
+
+		if (args.show && !isShow) {
 			const table = editStack.showTable(result, args.all);
 			console.log(table.toString());
-		} else if (args['get-state']) {
-			editStack.getState(result, args['get-state']);
 		}
 	});
 } else if (command.isManipulateStackConfig(args)) {

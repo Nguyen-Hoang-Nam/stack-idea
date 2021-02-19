@@ -66,6 +66,26 @@ const checkValue = (object, value) => {
 	return false;
 };
 
+exports.checkValue = checkValue;
+
+/**
+ * Get all property by value.
+ *
+ * @param {Object} object Store all row
+ * @param {string} value
+ * @return {string[]}
+ */
+exports.getAllByValue = (object, value) => {
+	const result = [];
+	for (const element in object) {
+		if (object[element].Name === value) {
+			result.push(element);
+		}
+	}
+
+	return result;
+};
+
 /**
  * Check empty value to reduce recursive.
  *

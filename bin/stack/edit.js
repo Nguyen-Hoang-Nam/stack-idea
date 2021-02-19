@@ -163,8 +163,16 @@ exports.showTable = (stack, isAll) => {
 exports.getState = (stack, row) => {
 	if (utils.checkProperty(stack, row)) {
 		table.push({
-			[row]: [stack[row].Name, stack[row].Tick]
+			[row]: [stack[row].Name, utils.tickSymbolByState(stack[row].Tick)]
 		});
+	} else if (utils.checkValue(stack, row)) {
+		const result = utils.getAllByValue(stack, row);
+
+		for (const row of result) {
+			table.push({
+				[row]: [stack[row].Name, utils.tickSymbolByState(stack[row].Tick)]
+			});
+		}
 	}
 
 	return table;
