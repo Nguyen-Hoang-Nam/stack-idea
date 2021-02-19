@@ -22,7 +22,7 @@ if (args.generate) {
 		const fileName = typeof args.generate === 'string' ? args.generate : global.STORE;
 
 		if (args.no) {
-			const table = editStack.showTable(stack, args.all);
+			const table = editStack.showTable(stack, args);
 			console.log(table.toString());
 		} else {
 			file.writeFile(fileName, stack, args);
@@ -52,12 +52,14 @@ if (args.generate) {
 			console.log(table.toString());
 		} else if (args['untick-all']) {
 			editStack.untickAll(result);
+			file.writeFile(global.STORE, result, args);
 		} else if (args['unremove-all']) {
 			editStack.unremoveAll(result);
+			file.writeFile(global.STORE, result, args);
 		}
 
 		if (args.show && !isShow) {
-			const table = editStack.showTable(result, args.all);
+			const table = editStack.showTable(result, args);
 			console.log(table.toString());
 		}
 	});

@@ -90,7 +90,7 @@ exports.readFile = (file, args, callback) => {
  */
 exports.writeFile = (file, object, args) => {
 	if (args.show) {
-		const table = showTable(object, args.all);
+		const table = showTable(object, args);
 
 		console.log(table.toString());
 	}
