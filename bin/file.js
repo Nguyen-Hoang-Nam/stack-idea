@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 
 const {noStackConfig} = require('./message');
-const {showTable} = require('./command');
+const {showTable} = require('./stack/edit');
 const {extension} = require('./global');
 const {read, write} = require('./type');
 const {addRow} = require('./pointer');
