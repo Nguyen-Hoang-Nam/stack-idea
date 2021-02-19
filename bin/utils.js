@@ -1,3 +1,5 @@
+const prompt = require('./prompt');
+
 const symbols = {
 	tick: {
 		linux: '✔',
@@ -75,7 +77,7 @@ exports.checkValue = checkValue;
  * @param {string} value
  * @return {string[]}
  */
-exports.getAllByValue = (object, value) => {
+const getAllByValue = (object, value) => {
 	const result = [];
 	for (const element in object) {
 		if (object[element].Name === value) {
@@ -85,6 +87,8 @@ exports.getAllByValue = (object, value) => {
 
 	return result;
 };
+
+exports.getAllByValue = getAllByValue;
 
 /**
  * Check empty value to reduce recursive.
@@ -246,15 +250,23 @@ exports.tickOneOrManyByProperty = (stack, property, state) => {
  * @param {string} state - State of stack
  * @param {boolean} isSingle
  */
-const tickOneByValue = (stack, value, state, isSingle = false) => {
-	for (const element in stack) {
-		if (stack[element].Name === value) {
-			stack[element].Tick = state;
+const tickOneByValue = async (stack, value, state, isChoice = false) => {
+	const matching = getAllByValue(stack, value);
 
-			if (isSingle) {
-				break;
-			}
+	if (matching.length > 1 && isChoice) {
+		const choices = [];
+
+		for (const row of matching) {
+			choices.push({
+				name: `${row} | ${stack[row].Name}`,
+				value: row
+			});
 		}
+
+		const chooseResult = await prompt.searchResultPrompt(choices, value);
+		stack[chooseResult.result].Tick = state;
+	} else if (matching.length === 1) {
+		stack[matching[0]].Tick = state;
 	}
 };
 
@@ -266,22 +278,25 @@ const tickOneByValue = (stack, value, state, isSingle = false) => {
  * @param {string} state - State of stack
  * @return {Object}
  */
-exports.tickOneOrManyByValue = (stack, value, state) => {
+exports.tickOneOrManyByValue = async (stack, value, state) => {
 	const type = checkEmpty(value);
 
 	if (type === 1) {
 		if (checkValue(stack, value)) {
-			tickOneByValue(stack, value, state, true);
+			await tickOneByValue(stack, value, state, true);
 		}
 	} else if (type === 2) {
 		const temporary = [];
+		const promises = [];
+
 		for (const element of value) {
 			if (checkValue(stack, element)) {
-				tickOneByValue(stack, element, state);
+				promises.push(tickOneByValue(stack, element, state));
 				temporary.push(element);
 			}
 		}
 
+		Promise.all(promises);
 		removeAll(value, temporary);
 	}
 

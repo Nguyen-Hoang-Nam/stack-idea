@@ -49,9 +49,9 @@ const tickOneState = async (stack, states, state) => {
 
 	if (utils.checkOneOrManyByValue(stack, states)) {
 		if (typeof states === 'string' && found === 0) {
-			utils.tickOneOrManyByValue(stack, states, state);
+			await utils.tickOneOrManyByValue(stack, states, state);
 		} else if (Array.isArray(states)) {
-			utils.tickOneOrManyByValue(stack, states, state);
+			await utils.tickOneOrManyByValue(stack, states, state);
 		}
 
 		found++;
