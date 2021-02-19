@@ -6,6 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2021-02-07
+### Added
+- Tick row by name of tech.
+- Find row by fuzzy search.
+- Choose row by interact UI.
+- Support CSV format.
+- --input, --output to choose file format.
+- Pointer stack, config file.
+
+### Changed
+- Remove yaml in global.
+- Use github action over travis CI.
+
+### Fixed
+- Fix coverall.
+
 ## [1.2.0] - 2021-01-30
 ### Added
 - Support yaml file.

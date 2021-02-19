@@ -1,0 +1,7 @@
+*.png
+test/
+.github/
+.husky/
+README.md
+LICENSE
+CHANGELOG.md

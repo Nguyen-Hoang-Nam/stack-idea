@@ -66,6 +66,26 @@ const checkValue = (object, value) => {
 	return false;
 };
 
+/**
+ * Check empty value to reduce recursive.
+ *
+ * @param {string | string[]} value Store value need to check
+ * @return {number}
+ */
+const checkEmpty = value => {
+	if (typeof value === 'string' && value !== '') {
+		return 1;
+	}
+
+	if (Array.isArray(value) && value.length > 0) {
+		return 2;
+	}
+
+	return 0;
+};
+
+exports.checkEmpty = checkEmpty;
+
 // Manipulate stack-config file
 
 /**
@@ -177,11 +197,13 @@ exports.tickSymbolByState = state => {
  * @return {Object}
  */
 exports.tickOneOrManyByProperty = (stack, property, state) => {
-	if (typeof property === 'string') {
+	const type = checkEmpty(property);
+
+	if (type === 1) {
 		if (checkProperty(stack, property)) {
 			stack[property].Tick = state;
 		}
-	} else if (Array.isArray(property)) {
+	} else if (type === 2) {
 		const temporary = [];
 		for (const element of property) {
 			if (checkProperty(stack, element)) {
@@ -225,11 +247,13 @@ const tickOneByValue = (stack, value, state, isSingle = false) => {
  * @return {Object}
  */
 exports.tickOneOrManyByValue = (stack, value, state) => {
-	if (typeof value === 'string') {
+	const type = checkEmpty(value);
+
+	if (type === 1) {
 		if (checkValue(stack, value)) {
 			tickOneByValue(stack, value, state, true);
 		}
-	} else if (Array.isArray(value)) {
+	} else if (type === 2) {
 		const temporary = [];
 		for (const element of value) {
 			if (checkValue(stack, element)) {
@@ -245,6 +269,24 @@ exports.tickOneOrManyByValue = (stack, value, state) => {
 };
 
 /**
+ * Convert old state of row to new state.
+ *
+ * @param {Object} stack - Store stack
+ * @param {string} oldState - Old state of row
+ * @param {string} newState - New state of row
+ * @return {Object}
+ */
+exports.convertState = (stack, oldState, newState) => {
+	for (const row in stack) {
+		if (checkProperty(stack, row) && stack[row].Tick === oldState) {
+			stack[row].Tick = newState;
+		}
+	}
+
+	return stack;
+};
+
+/**
  * Check properties exist in stack.
  *
  * @param {Object} stack - Store stack
@@ -252,11 +294,13 @@ exports.tickOneOrManyByValue = (stack, value, state) => {
  * @return {boolean}
  */
 exports.checkOneOrManyByProperty = (stack, property) => {
-	if (typeof property === 'string') {
+	const type = checkEmpty(property);
+
+	if (type === 1) {
 		if (checkProperty(stack, property)) {
 			return true;
 		}
-	} else if (Array.isArray(property)) {
+	} else if (type === 2) {
 		for (const element of property) {
 			if (checkProperty(stack, element)) {
 				return true;
@@ -275,11 +319,13 @@ exports.checkOneOrManyByProperty = (stack, property) => {
  * @return {boolean}
  */
 exports.checkOneOrManyByValue = (stack, value) => {
-	if (typeof value === 'string') {
+	const type = checkEmpty(value);
+
+	if (type === 1) {
 		if (checkValue(stack, value)) {
 			return true;
 		}
-	} else if (Array.isArray(value)) {
+	} else if (type === 2) {
 		for (const element of value) {
 			if (checkValue(stack, element)) {
 				return true;
@@ -382,3 +428,43 @@ exports.searchResultToInquirerChoices = searchResult => {
 	return inquirerChoices;
 };
 
+// Manipulate stack config
+
+/**
+ * Convert config object to tree object format.
+ *
+ * @param {Object} config Store all config
+ * @param {Object} tree Tree object for treeify
+ * @return {Object | string[]}
+ */
+const configToTree = (config, hidden, tree = {}) => {
+	if (Array.isArray(config)) {
+		let isStringArray = true;
+		const values = [];
+
+		for (const element of config) {
+			if (typeof element === 'object') {
+				isStringArray = false;
+				values.push(element.Name);
+
+				configToTree(element, hidden, tree);
+			}
+		}
+
+		return isStringArray ? config : values;
+	}
+
+	if (typeof config === 'object' && config !== null) {
+		for (const element in config) {
+			if (checkProperty(config, element) && element !== 'Name' && element !== 'Hidden' && !hidden.includes(element)) {
+				const value = configToTree(config[element], hidden, tree);
+
+				tree[element] = JSON.stringify(value);
+			}
+		}
+	}
+
+	return tree;
+};
+
+exports.configToTree = configToTree;

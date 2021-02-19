@@ -2,8 +2,8 @@ const path = require('path');
 const fs = require('fs');
 
 const {noStackConfig} = require('./message');
-const {showTable} = require('./command');
-const {extension} = require('./config');
+const {showTable} = require('./stack/edit');
+const {extension} = require('./global');
 const {read, write} = require('./type');
 const {addRow} = require('./pointer');
 
@@ -90,7 +90,9 @@ exports.readFile = (file, args, callback) => {
  */
 exports.writeFile = (file, object, args) => {
 	if (args.show) {
-		showTable(object, args.all);
+		const table = showTable(object, args.all);
+
+		console.log(table.toString());
 	}
 
 	const type = getExtension(file, args.output, args.global);

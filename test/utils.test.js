@@ -1,8 +1,8 @@
 const test = require('ava');
 const stripAnsi = require('strip-ansi');
-const {tickSymbolByState, tickOneOrManyByProperty, tickOneOrManyByValue, checkOneOrManyByProperty, checkOneOrManyByValue, checkDeepProperty, getPropertyPath, getPathComponent, stackToFuseArray, searchResultToInquirerChoices} = require('../bin/utils');
+const utils = require('../bin/utils');
 
-const data = {
+const stack = {
 	Render: {
 		Name: 'Client-Side',
 		Tick: 'untick'
@@ -19,11 +19,11 @@ const data = {
 
 // Manipulate stack fie
 test('Show tick icon', t => {
-	t.true(stripAnsi(tickSymbolByState('tick')) === '✔' || stripAnsi(tickSymbolByState('tick')) === '√');
+	t.true(stripAnsi(utils.tickSymbolByState('tick')) === '✔' || stripAnsi(utils.tickSymbolByState('tick')) === '√');
 });
 
 test('Tick one row by property', t => {
-	t.deepEqual(tickOneOrManyByProperty(data, 'API', 'tick'), {
+	t.deepEqual(utils.tickOneOrManyByProperty(stack, 'API', 'tick'), {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'untick'
@@ -40,7 +40,7 @@ test('Tick one row by property', t => {
 });
 
 test('Tick many rows by property', t => {
-	t.deepEqual(tickOneOrManyByProperty(data, ['API', 'JS Framework'], 'remove'), {
+	t.deepEqual(utils.tickOneOrManyByProperty(stack, ['API', 'JS Framework'], 'remove'), {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'untick'
@@ -57,7 +57,7 @@ test('Tick many rows by property', t => {
 });
 
 test('Tick one row by value', t => {
-	t.deepEqual(tickOneOrManyByValue(data, 'REST', 'tick'), {
+	t.deepEqual(utils.tickOneOrManyByValue(stack, 'REST', 'tick'), {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'untick'
@@ -74,7 +74,7 @@ test('Tick one row by value', t => {
 });
 
 test('Tick many rows by value', t => {
-	t.deepEqual(tickOneOrManyByValue(data, ['Client-Side', 'Vue'], 'tick'), {
+	t.deepEqual(utils.tickOneOrManyByValue(stack, ['Client-Side', 'Vue'], 'tick'), {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'tick'
@@ -91,19 +91,19 @@ test('Tick many rows by value', t => {
 });
 
 test('Check property exist', t => {
-	t.is(checkOneOrManyByProperty(data, 'API'), true);
+	t.is(utils.checkOneOrManyByProperty(stack, 'API'), true);
 });
 
 test('Check properties exist', t => {
-	t.is(checkOneOrManyByProperty(data, ['API', 'JS Framework']), true);
+	t.is(utils.checkOneOrManyByProperty(stack, ['API', 'JS Framework']), true);
 });
 
 test('Check value exist', t => {
-	t.is(checkOneOrManyByValue(data, 'REST'), true);
+	t.is(utils.checkOneOrManyByValue(stack, 'REST'), true);
 });
 
 test('Check values exist', t => {
-	t.is(checkOneOrManyByValue(data, ['Client-Side', 'Vue']), true);
+	t.is(utils.checkOneOrManyByValue(stack, ['Client-Side', 'Vue']), true);
 });
 
 // Search
@@ -124,7 +124,7 @@ const fuseArray = [
 ];
 
 test('Convert stack object to fuse array', t => {
-	t.deepEqual(stackToFuseArray(data), fuseArray);
+	t.deepEqual(utils.stackToFuseArray(stack), fuseArray);
 });
 
 const fuseResult = [
@@ -149,7 +149,7 @@ const fuseResult = [
 ];
 
 test('Convert fuse array to inquirer array', t => {
-	t.deepEqual(searchResultToInquirerChoices(fuseResult), [
+	t.deepEqual(utils.searchResultToInquirerChoices(fuseResult), [
 		{
 			name: 'Render | Client-Side',
 			value: 'Render'
@@ -189,17 +189,26 @@ const config = {
 	Database: [
 		'Oracle',
 		'MySQL'
-	]
+	],
+	Hidden: ['Database']
 };
 
+test('Convert config object to treeify object', t => {
+	t.deepEqual(utils.configToTree(config, config.Hidden), {
+		'GraphQL Framework': '["None","Relay"]',
+		API: '["REST","GraphQL"]',
+		Render: '["Server-Side","Client-Side"]'
+	});
+});
+
 test('Check property in nested object', t => {
-	t.is(checkDeepProperty(config, 'API'), true);
+	t.is(utils.checkDeepProperty(config, 'API'), true);
 });
 
 test('Get path of property in nested object', t => {
-	t.is(getPropertyPath(config, 'GraphQL Framework'), '.Render.1.API.1.GraphQL Framework');
+	t.is(utils.getPropertyPath(config, 'GraphQL Framework'), '.Render.1.API.1.GraphQL Framework');
 });
 
 test('Get components from path', t => {
-	t.deepEqual(getPathComponent('.Render.API.GraphQL Framework'), ['Render', 'API', 'GraphQL Framework']);
+	t.deepEqual(utils.getPathComponent('.Render.API.GraphQL Framework'), ['Render', 'API', 'GraphQL Framework']);
 });
