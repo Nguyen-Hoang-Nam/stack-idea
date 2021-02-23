@@ -1,3 +1,5 @@
+const prompt = require('./prompt');
+
 const symbols = {
 	tick: {
 		linux: '✔',
@@ -65,6 +67,28 @@ const checkValue = (object, value) => {
 
 	return false;
 };
+
+exports.checkValue = checkValue;
+
+/**
+ * Get all property by value.
+ *
+ * @param {Object} object Store all row
+ * @param {string} value
+ * @return {string[]}
+ */
+const getAllByValue = (object, value) => {
+	const result = [];
+	for (const element in object) {
+		if (object[element].Name === value) {
+			result.push(element);
+		}
+	}
+
+	return result;
+};
+
+exports.getAllByValue = getAllByValue;
 
 /**
  * Check empty value to reduce recursive.
@@ -226,15 +250,23 @@ exports.tickOneOrManyByProperty = (stack, property, state) => {
  * @param {string} state - State of stack
  * @param {boolean} isSingle
  */
-const tickOneByValue = (stack, value, state, isSingle = false) => {
-	for (const element in stack) {
-		if (stack[element].Name === value) {
-			stack[element].Tick = state;
+const tickOneByValue = async (stack, value, state, isChoice = false) => {
+	const matching = getAllByValue(stack, value);
 
-			if (isSingle) {
-				break;
-			}
+	if (matching.length > 1 && isChoice) {
+		const choices = [];
+
+		for (const row of matching) {
+			choices.push({
+				name: `${row} | ${stack[row].Name}`,
+				value: row
+			});
 		}
+
+		const chooseResult = await prompt.searchResultPrompt(choices, value);
+		stack[chooseResult.result].Tick = state;
+	} else if (matching.length === 1) {
+		stack[matching[0]].Tick = state;
 	}
 };
 
@@ -246,22 +278,25 @@ const tickOneByValue = (stack, value, state, isSingle = false) => {
  * @param {string} state - State of stack
  * @return {Object}
  */
-exports.tickOneOrManyByValue = (stack, value, state) => {
+exports.tickOneOrManyByValue = async (stack, value, state) => {
 	const type = checkEmpty(value);
 
 	if (type === 1) {
 		if (checkValue(stack, value)) {
-			tickOneByValue(stack, value, state, true);
+			await tickOneByValue(stack, value, state, true);
 		}
 	} else if (type === 2) {
 		const temporary = [];
+		const promises = [];
+
 		for (const element of value) {
 			if (checkValue(stack, element)) {
-				tickOneByValue(stack, element, state);
+				promises.push(tickOneByValue(stack, element, state));
 				temporary.push(element);
 			}
 		}
 
+		Promise.all(promises);
 		removeAll(value, temporary);
 	}
 
@@ -431,6 +466,18 @@ exports.searchResultToInquirerChoices = searchResult => {
 // Manipulate stack config
 
 /**
+ * Check row valid.
+ *
+ * @param {string[]} hidden - Hidden stack
+ * @param {string} tech - Name of tech
+ * @return {boolean}
+ */
+const acceptRow = (hidden, tech) =>
+	tech !== 'Name' && tech !== 'Hidden' && !hidden.includes(tech);
+
+exports.acceptRow = acceptRow;
+
+/**
  * Convert config object to tree object format.
  *
  * @param {Object} config Store all config
@@ -456,7 +503,7 @@ const configToTree = (config, hidden, tree = {}) => {
 
 	if (typeof config === 'object' && config !== null) {
 		for (const element in config) {
-			if (checkProperty(config, element) && element !== 'Name' && element !== 'Hidden' && !hidden.includes(element)) {
+			if (checkProperty(config, element) && acceptRow(hidden, element)) {
 				const value = configToTree(config[element], hidden, tree);
 
 				tree[element] = JSON.stringify(value);

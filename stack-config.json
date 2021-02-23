@@ -1,131 +1,131 @@
 {
-  "Render": [
+  Render: [
     {
-      "Name": "Server-Side"
+      Name: 'Server-Side',
     },
     {
-      "Name": "Client-Side",
-      "API": [
+      Name: 'Client-Side',
+      API: [
         {
-          "Name": "REST"
+          Name: 'REST',
         },
         {
-          "Name": "GraphQL",
-          "GraphQL Framework": [
-            "None",
-            "Relay",
-            "Apollo"
-          ]
-        }
-      ]
-    }
+          Name: 'GraphQL',
+          'GraphQL Framework': [
+            'None',
+            'Relay',
+            'Apollo',
+          ],
+        },
+      ],
+    },
   ],
-  "JS Framework": [
+  'JS Framework': [
     {
-      "Name": "React",
-      "React State Management": [
-        "Hooks",
-        "Redux"
-      ]
+      Name: 'React',
+      'React State Management': [
+        'Hooks',
+        'Redux',
+      ],
     },
     {
-      "Name": "Angular",
-      "Angular State Management": [
-        "None",
-        "RxJS",
-        "NgRx"
-      ]
+      Name: 'Angular',
+      'Angular State Management': [
+        'None',
+        'RxJS',
+        'NgRx',
+      ],
     },
     {
-      "Name": "Vue",
-      "Vue State Management": [
-        "None",
-        "Vuex"
-      ]
+      Name: 'Vue',
+      'Vue State Management': [
+        'None',
+        'Vuex',
+      ],
     },
     {
-      "Name": "Svelte"
-    }
+      Name: 'Svelte',
+    },
   ],
-  "JS  Preprocessor": [
-    "None",
-    "Typescript"
+  'JS  Preprocessor': [
+    'None',
+    'Typescript',
   ],
-  "CSS Framework": [
-    "None",
-    "Material UI",
-    "Tailwind CSS"
+  'CSS Framework': [
+    'None',
+    'Material UI',
+    'Tailwind CSS',
   ],
-  "CSS Preprocessor": [
-    "None",
-    "SCSS",
-    "Stylus"
+  'CSS Preprocessor': [
+    'None',
+    'SCSS',
+    'Stylus',
   ],
-  "Modern CSS": [
-    "None",
-    "Styled Component",
-    "CSS Modules",
-    "Emotion"
+  'Modern CSS': [
+    'None',
+    'Styled Component',
+    'CSS Modules',
+    'Emotion',
   ],
-  "Test": [
-    "None",
-    "Jest",
-    "Cypress",
-    "Enzyme"
+  Test: [
+    'None',
+    'Jest',
+    'Cypress',
+    'Enzyme',
   ],
-  "Wasm": [
-    "None",
-    "Rust",
-    "Go",
-    "C++"
+  Wasm: [
+    'None',
+    'Rust',
+    'Go',
+    'C++',
   ],
-  "Back-End": [
-    "Node",
-    "Python",
-    "Go"
+  'Back-End': [
+    'Node',
+    'Python',
+    'Go',
   ],
-  "Database": [
-    "Oracle",
-    "MySQL",
-    "PostgreSQL",
-    "Cassandra",
-    "Teradata",
-    "Hive",
-    "Neo4j",
-    "MariaDB",
-    "MongoDB"
+  Database: [
+    'Oracle',
+    'MySQL',
+    'PostgreSQL',
+    'Cassandra',
+    'Teradata',
+    'Hive',
+    'Neo4j',
+    'MariaDB',
+    'MongoDB',
   ],
-  "Cache": [
-    "Redis",
-    "Memcached",
-    "Hazelcast"
+  Cache: [
+    'Redis',
+    'Memcached',
+    'Hazelcast',
   ],
-  "Search": [
-    "Elasticsearch",
-    "Splunk",
-    "Solr"
+  Search: [
+    'Elasticsearch',
+    'Splunk',
+    'Solr',
   ],
-  "Message Broker": [
-    "None",
-    "RabbitMQ",
-    "Kafka"
+  'Message Broker': [
+    'None',
+    'RabbitMQ',
+    'Kafka',
   ],
-  "Network": [
-    "HTTP",
-    "HTTPS",
-    "HTTP2"
+  Network: [
+    'HTTP',
+    'HTTPS',
+    'HTTP2',
   ],
-  "Server": [
-    "Ubuntu",
-    "Debian",
-    "Alphine"
+  Server: [
+    'Ubuntu',
+    'Debian',
+    'Alphine',
   ],
-  "Web Server": [
-    "Nginx",
-    "Apache",
-    "Caddy"
+  'Web Server': [
+    'Nginx',
+    'Apache',
+    'Caddy',
   ],
-  "Hidden": [
-    "Test"
-  ]
+  Hidden: [
+    'Test',
+  ],
 }

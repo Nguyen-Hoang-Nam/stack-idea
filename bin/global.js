@@ -15,7 +15,8 @@ exports.minimistConfig = {
 		r: 'remove',
 		G: 'global',
 		y: 'yaml',
-		i: 'item'
+		i: 'item',
+		n: 'no'
 	}
 };
 
@@ -77,6 +78,8 @@ exports.manipulateStack = [
 	'untick',
 	'remove',
 	'show',
-	'get-state'
+	'get-state',
+	'untick-all',
+	'unremove-all'
 ];
 

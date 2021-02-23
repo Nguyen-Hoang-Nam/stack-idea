@@ -1,5 +1,7 @@
 const test = require('ava');
 const stripAnsi = require('strip-ansi');
+const cloneDeep = require('lodash.clonedeep');
+
 const utils = require('../bin/utils');
 
 const stack = {
@@ -23,7 +25,9 @@ test('Show tick icon', t => {
 });
 
 test('Tick one row by property', t => {
-	t.deepEqual(utils.tickOneOrManyByProperty(stack, 'API', 'tick'), {
+	const stackClone = cloneDeep(stack);
+
+	t.deepEqual(utils.tickOneOrManyByProperty(stackClone, 'API', 'tick'), {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'untick'
@@ -40,7 +44,9 @@ test('Tick one row by property', t => {
 });
 
 test('Tick many rows by property', t => {
-	t.deepEqual(utils.tickOneOrManyByProperty(stack, ['API', 'JS Framework'], 'remove'), {
+	const stackClone = cloneDeep(stack);
+
+	t.deepEqual(utils.tickOneOrManyByProperty(stackClone, ['API', 'JS Framework'], 'remove'), {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'untick'
@@ -56,8 +62,11 @@ test('Tick many rows by property', t => {
 	});
 });
 
-test('Tick one row by value', t => {
-	t.deepEqual(utils.tickOneOrManyByValue(stack, 'REST', 'tick'), {
+test('Tick one row by value', async t => {
+	const stackClone = cloneDeep(stack);
+	const result = await utils.tickOneOrManyByValue(stackClone, 'REST', 'tick');
+
+	t.deepEqual(result, {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'untick'
@@ -68,20 +77,23 @@ test('Tick one row by value', t => {
 		},
 		'JS Framework': {
 			Name: 'Vue',
-			Tick: 'remove'
+			Tick: 'untick'
 		}
 	});
 });
 
-test('Tick many rows by value', t => {
-	t.deepEqual(utils.tickOneOrManyByValue(stack, ['Client-Side', 'Vue'], 'tick'), {
+test('Tick many rows by value', async t => {
+	const stackClone = cloneDeep(stack);
+	const result = await utils.tickOneOrManyByValue(stackClone, ['Client-Side', 'Vue'], 'tick');
+
+	t.deepEqual(result, {
 		Render: {
 			Name: 'Client-Side',
 			Tick: 'tick'
 		},
 		API: {
 			Name: 'REST',
-			Tick: 'tick'
+			Tick: 'untick'
 		},
 		'JS Framework': {
 			Name: 'Vue',
@@ -192,6 +204,10 @@ const config = {
 	],
 	Hidden: ['Database']
 };
+
+test('Check hidden row', t => {
+	t.is(utils.acceptRow(config.Hidden, 'Database'), false);
+});
 
 test('Convert config object to treeify object', t => {
 	t.deepEqual(utils.configToTree(config, config.Hidden), {

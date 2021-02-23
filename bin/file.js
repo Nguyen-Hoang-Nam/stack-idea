@@ -13,12 +13,11 @@ const LOCALPATH = '.';
 /**
  * Generate extension base on type.
  *
- * @param {string} file - Name of file
  * @param {string} type - Name of file type
  * @param {boolean} global - Check global file
  * @return {string}
  */
-const getExtension = (file, type, global) => {
+const getExtension = (type, global) => {
 	let ext = '';
 
 	if (type) {
@@ -31,6 +30,8 @@ const getExtension = (file, type, global) => {
 
 	return ext;
 };
+
+exports.getExtension = getExtension;
 
 /**
  * Generate path of file.
@@ -47,6 +48,8 @@ const getPath = (file, type, global) => {
 	return stackConfigPath;
 };
 
+exports.getPath = getPath;
+
 /**
  * Read file with options.
  *
@@ -55,7 +58,7 @@ const getPath = (file, type, global) => {
  * @param {function} callback
  */
 exports.readFile = (file, args, callback) => {
-	let type = getExtension(file, args.input, args.global);
+	let type = getExtension(args.input, args.global);
 
 	let stackConfigPath = getPath(file, type, args.global);
 
@@ -90,12 +93,12 @@ exports.readFile = (file, args, callback) => {
  */
 exports.writeFile = (file, object, args) => {
 	if (args.show) {
-		const table = showTable(object, args.all);
+		const table = showTable(object, args);
 
 		console.log(table.toString());
 	}
 
-	const type = getExtension(file, args.output, args.global);
+	const type = getExtension(args.output, args.global);
 
 	const path = getPath(file, type, args.global);
 	const data = write(object, type);
