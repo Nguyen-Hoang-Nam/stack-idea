@@ -1,4 +1,4 @@
-const Table = require('cli-table');
+const Table = require('cli-table3');
 const chalk = require('chalk');
 
 const global = require('../global');
@@ -49,9 +49,9 @@ const tickOneState = async (stack, states, state) => {
 
 	if (utils.checkOneOrManyByValue(stack, states)) {
 		if (typeof states === 'string' && found === 0) {
-			utils.tickOneOrManyByValue(stack, states, state);
+			await utils.tickOneOrManyByValue(stack, states, state);
 		} else if (Array.isArray(states)) {
-			utils.tickOneOrManyByValue(stack, states, state);
+			await utils.tickOneOrManyByValue(stack, states, state);
 		}
 
 		found++;
@@ -125,13 +125,15 @@ exports.tickAllState = async (stack, ticks, unticks, removes) => {
  * @param {Object} stack - Store stack
  * @param {boolean} isAll - Show all stack even remove one
  */
-exports.showTable = (stack, isAll) => {
+exports.showTable = (stack, args) => {
+	const rows = [];
+
 	for (let tech in stack) {
-		if (utils.checkDeepProperty(stack, tech)) {
+		if (utils.checkProperty(stack, tech)) {
 			const line = stack[tech];
 			let name = line.Name;
 
-			if (isAll || (line.Tick !== 'remove' && name !== 'None')) {
+			if (args.all || (line.Tick !== 'remove' && name !== 'None')) {
 				if (line.Tick === 'remove') {
 					tech = chalk.gray(tech);
 					name = chalk.gray(line.Name);
@@ -143,11 +145,24 @@ exports.showTable = (stack, isAll) => {
 					name = chalk.white(line.Name);
 				}
 
-				table.push({
+				rows.push({
 					[tech]: [name, utils.tickSymbolByState(line.Tick)]
 				});
 			}
 		}
+	}
+
+	if (args.sort) {
+		rows.sort((row1, row2) => {
+			const stack1 = Object.keys(row1)[0];
+			const stack2 = Object.keys(row2)[0];
+
+			return stack1.localeCompare(stack2);
+		});
+	}
+
+	for (const element of rows) {
+		table.push(element);
 	}
 
 	return table;
@@ -163,8 +178,16 @@ exports.showTable = (stack, isAll) => {
 exports.getState = (stack, row) => {
 	if (utils.checkProperty(stack, row)) {
 		table.push({
-			[row]: [stack[row].Name, stack[row].Tick]
+			[row]: [stack[row].Name, utils.tickSymbolByState(stack[row].Tick)]
 		});
+	} else if (utils.checkValue(stack, row)) {
+		const result = utils.getAllByValue(stack, row);
+
+		for (const row of result) {
+			table.push({
+				[row]: [stack[row].Name, utils.tickSymbolByState(stack[row].Tick)]
+			});
+		}
 	}
 
 	return table;

@@ -1,6 +1,7 @@
 const YAML = require('js-yaml');
 const CSV = require('./type/csv');
 const TOML = require('@iarna/toml');
+const JSON5 = require('json5');
 
 /**
  * Write stack to file.
@@ -22,7 +23,7 @@ exports.write = (stack, type) => {
 		return CSV.write(stack);
 	}
 
-	return JSON.stringify(stack, null, 2);
+	return JSON5.stringify(stack, null, 2);
 };
 
 /**
@@ -45,6 +46,6 @@ exports.read = (buffer, type) => {
 		return CSV.read(buffer);
 	}
 
-	return JSON.parse(buffer.toString());
+	return JSON5.parse(buffer.toString());
 };
 

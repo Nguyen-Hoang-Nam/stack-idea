@@ -56,8 +56,12 @@ exports.help = args => {
 	helpCommand('-G, --global', 'Use file stack.json in global');
 	helpCommand('-y, --yaml', 'Use yaml file type instead of json');
 	helpCommand('-i, --item ', 'Use to input array of parameter');
+	helpCommand('-n, --no', 'Not create output file');
+	helpCommand('--sort', 'Sort row of table');
 
 	if (args.help && args.all) {
+		helpCommand('--untick-all', 'Untick all row');
+		helpCommand('--unremove-all', 'Unremove all row');
 		helpCommand('--add-item', 'Add item to row in stack-config in global');
 		helpCommand('--remove-item', 'Remove item from row in stack-config in global');
 		helpCommand('--get-row', 'Print all items of row in stack-config in global');
@@ -65,7 +69,7 @@ exports.help = args => {
 		helpCommand('--remove-row', 'Remove row from stack-config in global');
 		helpCommand('--hide-row', 'Hide row in stack-config in global');
 		helpCommand('--show-row', 'Show row that hide in stack-config in global');
-		helpCommand('--get-all', 'Print stack-config in global');
+		helpCommand('--get-all', 'Show stack-config as tree in global');
 	}
 
 	console.log('\n');
