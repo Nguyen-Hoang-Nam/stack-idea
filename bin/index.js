@@ -36,18 +36,14 @@ if (args.generate) {
 	const fileName = typeof args.show === 'string' ? args.show : global.STORE;
 
 	file.readFile(fileName, args, result => {
-		let isShow = false;
+		let isShow = true;
 
 		if (editStack.checkAllState(result, args.tick, args.untick, args.remove)) {
-			isShow = true;
-
 			editStack.tickAllState(result, args.tick, args.untick, args.remove)
 				.then(() => {
 					file.writeFile(global.STORE, result, args);
 				});
 		} else if (args['get-state']) {
-			isShow = true;
-
 			const table = editStack.getState(result, args['get-state']);
 			console.log(table.toString());
 		} else if (args['untick-all']) {
@@ -56,6 +52,8 @@ if (args.generate) {
 		} else if (args['unremove-all']) {
 			editStack.unremoveAll(result);
 			file.writeFile(global.STORE, result, args);
+		} else {
+			isShow = false;
 		}
 
 		if (args.show && !isShow) {

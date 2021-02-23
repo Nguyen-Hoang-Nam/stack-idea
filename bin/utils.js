@@ -466,6 +466,18 @@ exports.searchResultToInquirerChoices = searchResult => {
 // Manipulate stack config
 
 /**
+ * Check row valid.
+ *
+ * @param {string[]} hidden - Hidden stack
+ * @param {string} tech - Name of tech
+ * @return {boolean}
+ */
+const acceptRow = (hidden, tech) =>
+	tech !== 'Name' && tech !== 'Hidden' && !hidden.includes(tech);
+
+exports.acceptRow = acceptRow;
+
+/**
  * Convert config object to tree object format.
  *
  * @param {Object} config Store all config
@@ -491,7 +503,7 @@ const configToTree = (config, hidden, tree = {}) => {
 
 	if (typeof config === 'object' && config !== null) {
 		for (const element in config) {
-			if (checkProperty(config, element) && element !== 'Name' && element !== 'Hidden' && !hidden.includes(element)) {
+			if (checkProperty(config, element) && acceptRow(hidden, element)) {
 				const value = configToTree(config[element], hidden, tree);
 
 				tree[element] = JSON.stringify(value);

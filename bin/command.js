@@ -57,6 +57,7 @@ exports.help = args => {
 	helpCommand('-y, --yaml', 'Use yaml file type instead of json');
 	helpCommand('-i, --item ', 'Use to input array of parameter');
 	helpCommand('-n, --no', 'Not create output file');
+	helpCommand('--sort', 'Sort row of table');
 
 	if (args.help && args.all) {
 		helpCommand('--untick-all', 'Untick all row');

@@ -1,7 +1,8 @@
 const test = require('ava');
 const stripAnsi = require('strip-ansi');
-const utils = require('../bin/utils');
 const cloneDeep = require('lodash.clonedeep');
+
+const utils = require('../bin/utils');
 
 const stack = {
 	Render: {
@@ -203,6 +204,10 @@ const config = {
 	],
 	Hidden: ['Database']
 };
+
+test('Check hidden row', t => {
+	t.is(utils.acceptRow(config.Hidden, 'Database'), false);
+});
 
 test('Convert config object to treeify object', t => {
 	t.deepEqual(utils.configToTree(config, config.Hidden), {

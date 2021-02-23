@@ -154,11 +154,11 @@ exports.showTable = (stack, args) => {
 
 	if (args.sort) {
 		rows.sort((row1, row2) => {
-			let stack1 = Object.keys(row1)[0];
-			let stack2 = Object.keys(row2)[0];
+			const stack1 = Object.keys(row1)[0];
+			const stack2 = Object.keys(row2)[0];
 
 			return stack1.localeCompare(stack2);
-		})
+		});
 	}
 
 	for (const element of rows) {

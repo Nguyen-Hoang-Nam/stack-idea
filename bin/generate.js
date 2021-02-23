@@ -1,16 +1,6 @@
 const utils = require('./utils');
 
 /**
- * Check row valid.
- *
- * @param {string[]} hidden - Hidden stack
- * @param {string} tech - Name of tech
- * @return {boolean}
- */
-const acceptTech = (hidden, tech) =>
-	tech !== 'Name' && tech !== 'Hidden' && !hidden.includes(tech);
-
-/**
  * Generate random stack from config.
  *
  * @param {Object} techs - Store all config
@@ -19,7 +9,7 @@ const acceptTech = (hidden, tech) =>
  */
 const generate = (techs, result, hidden) => {
 	for (const tech in techs) {
-		if (utils.checkDeepProperty(techs, tech) && acceptTech(hidden, tech)) {
+		if (utils.checkDeepProperty(techs, tech) && utils.acceptRow(hidden, tech)) {
 			const value = utils.random(techs[tech]);
 
 			if (typeof value === 'string') {
