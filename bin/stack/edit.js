@@ -4,33 +4,9 @@ const chalk = require('chalk');
 const global = require('../global');
 const utils = require('../utils');
 const search = require('../search');
+const prompt = require('../prompt');
 
 const table = new Table(global.tableConfig);
-
-/**
- * Check name exist in stack.
- *
- * @param {Object} stack - Store stack
- * @param {string[]} states - Store items
- * @return {boolean}
- */
-const checkOneState = (stack, states) => {
-	if (utils.checkOneOrManyByProperty(stack, states)) {
-		return true;
-	}
-
-	if (utils.checkOneOrManyByValue(stack, states)) {
-		return true;
-	}
-
-	if (typeof states === 'string' && search.checkFuzzy(stack, states)) {
-		return true;
-	}
-
-	return false;
-};
-
-exports.checkOneState = checkOneState;
 
 /**
  * Tick item.
@@ -58,10 +34,15 @@ const tickOneState = async (stack, states, state) => {
 	}
 
 	if (typeof states === 'string' && found === 0 && search.checkFuzzy(stack, states)) {
+		found++;
 		await	search.tickFuzzy(stack, states, state);
 	}
 
-	return stack;
+	if (found) {
+		return stack;
+	}
+
+	return {};
 };
 
 exports.tickOneState = tickOneState;
@@ -91,19 +72,6 @@ exports.unremoveAll = stack => {
 };
 
 /**
- * Check all items from command exist.
- *
- * @param {Object} stack - Store stack
- * @param {string[]} ticks - Store items need to check
- * @param {string[]} unticks - Store items need to uncheck
- * @param {string[]} removes - Store items need to remove
- * @return {boolean}
- */
-exports.checkAllState = (stack, ticks, unticks, removes) => {
-	return checkOneState(stack, ticks) || checkOneState(stack, unticks) || checkOneState(stack, removes);
-};
-
-/**
  * Tick all items from command.
  *
  * @param {Object} stack - Store stack
@@ -113,10 +81,29 @@ exports.checkAllState = (stack, ticks, unticks, removes) => {
  * @return {Object]
  */
 exports.tickAllState = async (stack, ticks, unticks, removes) => {
-	stack = await tickOneState(stack, ticks, 'tick');
-	stack = await tickOneState(stack, unticks, 'untick');
-	stack = await tickOneState(stack, removes, 'remove');
-	return stack;
+	let result;
+	let empty = 0;
+
+	result = await tickOneState(stack, ticks, 'tick');
+	if (!utils.checkObjectEmpty(result)) {
+		empty++;
+	}
+
+	result = await tickOneState(stack, unticks, 'untick');
+	if (!utils.checkObjectEmpty(result)) {
+		empty++;
+	}
+
+	result = await tickOneState(stack, removes, 'remove');
+	if (!utils.checkObjectEmpty(result)) {
+		empty++;
+	}
+
+	if (empty > 0) {
+		return stack;
+	}
+
+	return result;
 };
 
 /**
@@ -174,7 +161,7 @@ exports.showTable = (stack, args) => {
  * @param {string} row - Name of stack
  * @return {Object}
  */
-exports.getState = (stack, row) => {
+exports.getState = async (stack, row) => {
 	if (utils.checkProperty(stack, row)) {
 		table.push({
 			[row]: [stack[row].Name, utils.tickSymbolByState(stack[row].Tick)]
@@ -182,9 +169,25 @@ exports.getState = (stack, row) => {
 	} else if (utils.checkValue(stack, row)) {
 		const result = utils.getAllByValue(stack, row);
 
-		for (const row of result) {
+		for (const line of result) {
 			table.push({
-				[row]: [stack[row].Name, utils.tickSymbolByState(stack[row].Tick)]
+				[line]: [stack[line].Name, utils.tickSymbolByState(stack[line].Tick)]
+			});
+		}
+	} else if (search.checkFuzzy(stack, row)) {
+		const result = search.getFuzzy(stack, row);
+		if (result.length === 1) {
+			const line = result.item.Stack;
+			table.push({
+				[line]: [stack[line].Name, utils.tickSymbolByState(stack[line].Tick)]
+			});
+		} else if (result.length > 1) {
+			const choices = utils.searchResultToInquirerChoices(result);
+			const choice = await prompt.searchResultPrompt(choices, row);
+
+			const line = choice.result;
+			table.push({
+				[line]: [stack[line].Name, utils.tickSymbolByState(stack[line].Tick)]
 			});
 		}
 	}

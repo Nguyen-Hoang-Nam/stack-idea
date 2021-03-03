@@ -1,6 +1,5 @@
 const utils = require('../utils');
 const treeify = require('object-treeify');
-const chalk = require('chalk');
 
 /**
  * Add tech to stack config.
@@ -45,8 +44,8 @@ exports.addItem = addItem;
 const getRow = (config, property) => {
 	const treeObject = utils.configToTree(config, config.Hidden);
 
-	if (utils.checkProperty(treeObject, chalk.blue(property))) {
-		return property + ' : ' + treeObject[chalk.blue(property)];
+	if (utils.checkProperty(treeObject, property)) {
+		return property + ' : ' + treeObject[property];
 	}
 
 	const pattern = new RegExp(property, 'g');
@@ -179,7 +178,7 @@ exports.showRow = showRow;
  * @param {Object} config - Store config
  */
 const getAll = config => {
-	const treeObject = utils.configToTree(config, config.Hidden);
+	const treeObject = utils.configToTree(config, config.Hidden, true);
 
 	console.log(treeify(treeObject));
 };

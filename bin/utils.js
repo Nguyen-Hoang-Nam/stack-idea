@@ -111,6 +111,22 @@ const checkEmpty = value => {
 
 exports.checkEmpty = checkEmpty;
 
+/**
+ * Check object empty
+ *
+ * @param {Object} object
+ * @return {boolean}
+ */
+exports.checkObjectEmpty = object => {
+	for (const i in object) {
+		if (checkProperty(object, i)) {
+			return false;
+		}
+	}
+
+	return true;
+};
+
 // Manipulate stack-config file
 
 /**
@@ -283,18 +299,14 @@ exports.tickOneOrManyByValue = async (stack, value, state) => {
 	const type = checkEmpty(value);
 
 	if (type === 1) {
-		if (checkValue(stack, value)) {
-			await tickOneByValue(stack, value, state, true);
-		}
+		await tickOneByValue(stack, value, state, true);
 	} else if (type === 2) {
 		const temporary = [];
 		const promises = [];
 
 		for (const element of value) {
-			if (checkValue(stack, element)) {
-				promises.push(tickOneByValue(stack, element, state));
-				temporary.push(element);
-			}
+			promises.push(tickOneByValue(stack, element, state));
+			temporary.push(element);
 		}
 
 		Promise.all(promises);
@@ -519,7 +531,7 @@ exports.acceptRow = acceptRow;
  * @param {Object} tree Tree object for treeify
  * @return {Object | string[]}
  */
-const configToTree = (config, hidden, tree = {}) => {
+const configToTree = (config, hidden, isColor = false, tree = {}) => {
 	if (Array.isArray(config)) {
 		let isStringArray = true;
 		const values = [];
@@ -529,7 +541,7 @@ const configToTree = (config, hidden, tree = {}) => {
 				isStringArray = false;
 				values.push(element.Name);
 
-				configToTree(element, hidden, tree);
+				configToTree(element, hidden, isColor, tree);
 			}
 		}
 
@@ -539,9 +551,13 @@ const configToTree = (config, hidden, tree = {}) => {
 	if (typeof config === 'object' && config !== null) {
 		for (const element in config) {
 			if (checkProperty(config, element) && acceptRow(hidden, element)) {
-				const value = configToTree(config[element], hidden, tree);
+				const value = configToTree(config[element], hidden, isColor, tree);
 
-				tree[chalk.blue(element)] = JSON.stringify(value);
+				if (isColor) {
+					tree[chalk.blue(element)] = value.join(', ');
+				} else {
+					tree[element] = JSON.stringify(value);
+				}
 			}
 		}
 	}
