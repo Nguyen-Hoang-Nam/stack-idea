@@ -24,6 +24,21 @@ exports.checkFuzzy = (stack, key) => {
 };
 
 /**
+ * Get fuzzy search result
+ *
+ * @param {Object} stack Store all row
+ * @param {string} key Name of row
+ * @return {Object[]}
+ */
+exports.getFuzzy = (stack, key) => {
+	const fuseArray = utils.stackToFuseArray(stack);
+	const fuse = new Fuse(fuseArray, fuseConfig);
+	const searchResult = fuse.search(key);
+
+	return searchResult;
+};
+
+/**
  * Tick fuzzy keyword in stack.
  *
  * @param {Object} stack - Store stack

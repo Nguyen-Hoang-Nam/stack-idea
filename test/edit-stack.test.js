@@ -18,26 +18,6 @@ const stack = {
 	}
 };
 
-test('Check exist property in state', t => {
-	t.is(command.checkOneState(stack, 'API'), true);
-});
-
-test('Check exist value in state', t => {
-	t.is(command.checkOneState(stack, 'Vue'), true);
-});
-
-test('Check exist fuzzy keywork in state', t => {
-	t.is(command.checkOneState(stack, 'clent'), true);
-});
-
-test('Check exist property in states', t => {
-	t.is(command.checkOneState(stack, ['Render', 'API']), true);
-});
-
-test('Check exist value in states', t => {
-	t.is(command.checkOneState(stack, ['Client-Side', 'Vue']), true);
-});
-
 test('Tick exist property in state', async t => {
 	const stackClone = cloneDeep(stack);
 
@@ -184,14 +164,6 @@ test('Unremove all rows', t => {
 			Tick: 'untick'
 		}
 	});
-});
-
-test('Check exist property in all states', t => {
-	t.is(command.checkOneState(stack, 'API', 'Render', 'Vue'), true);
-});
-
-test('Check exist property in all states of list items', t => {
-	t.is(command.checkOneState(stack, ['API', 'Render'], ['REST'], ['Vue', 'Render']), true);
 });
 
 test('Tick exist property in all states', async t => {
