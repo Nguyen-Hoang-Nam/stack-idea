@@ -1,4 +1,5 @@
 const prompt = require('./prompt');
+const chalk = require('chalk');
 
 const symbols = {
 	tick: {
@@ -109,6 +110,22 @@ const checkEmpty = value => {
 };
 
 exports.checkEmpty = checkEmpty;
+
+/**
+ * Check object empty
+ *
+ * @param {Object} object
+ * @return {boolean}
+ */
+exports.checkObjectEmpty = object => {
+	for (const i in object) {
+		if (checkProperty(object, i)) {
+			return false;
+		}
+	}
+
+	return true;
+};
 
 // Manipulate stack-config file
 
@@ -282,18 +299,14 @@ exports.tickOneOrManyByValue = async (stack, value, state) => {
 	const type = checkEmpty(value);
 
 	if (type === 1) {
-		if (checkValue(stack, value)) {
-			await tickOneByValue(stack, value, state, true);
-		}
+		await tickOneByValue(stack, value, state, true);
 	} else if (type === 2) {
 		const temporary = [];
 		const promises = [];
 
 		for (const element of value) {
-			if (checkValue(stack, element)) {
-				promises.push(tickOneByValue(stack, element, state));
-				temporary.push(element);
-			}
+			promises.push(tickOneByValue(stack, element, state));
+			temporary.push(element);
 		}
 
 		Promise.all(promises);
@@ -417,6 +430,40 @@ exports.isManipulate = (args, manipulateList) => {
 	return false;
 };
 
+/**
+ * Sort row in table by key
+ *
+ * @param {Object} rows Store all rows
+ * @return {Object}
+ */
+exports.sortByKey = rows => {
+	rows.sort((row1, row2) => {
+		const stack1 = Object.keys(row1)[0];
+		const stack2 = Object.keys(row2)[0];
+
+		return stack1.localeCompare(stack2);
+	});
+
+	return rows;
+};
+
+/**
+ * Sort row in table by value
+ *
+ * @param {Object} rows Store al rows
+ * @return {Object}
+ */
+exports.sortByValue = rows => {
+	rows.sort((row1, row2) => {
+		const stack1 = Object.values(row1)[0];
+		const stack2 = Object.values(row2)[0];
+
+		return stack1[0].localeCompare(stack2[0]);
+	});
+
+	return rows;
+};
+
 // Search
 
 /**
@@ -484,7 +531,7 @@ exports.acceptRow = acceptRow;
  * @param {Object} tree Tree object for treeify
  * @return {Object | string[]}
  */
-const configToTree = (config, hidden, tree = {}) => {
+const configToTree = (config, hidden, isColor = false, tree = {}) => {
 	if (Array.isArray(config)) {
 		let isStringArray = true;
 		const values = [];
@@ -494,7 +541,7 @@ const configToTree = (config, hidden, tree = {}) => {
 				isStringArray = false;
 				values.push(element.Name);
 
-				configToTree(element, hidden, tree);
+				configToTree(element, hidden, isColor, tree);
 			}
 		}
 
@@ -504,9 +551,13 @@ const configToTree = (config, hidden, tree = {}) => {
 	if (typeof config === 'object' && config !== null) {
 		for (const element in config) {
 			if (checkProperty(config, element) && acceptRow(hidden, element)) {
-				const value = configToTree(config[element], hidden, tree);
+				const value = configToTree(config[element], hidden, isColor, tree);
 
-				tree[element] = JSON.stringify(value);
+				if (isColor) {
+					tree[chalk.blue(element)] = value.join(', ');
+				} else {
+					tree[element] = JSON.stringify(value);
+				}
 			}
 		}
 	}

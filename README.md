@@ -44,14 +44,8 @@ $ stack --help
     -G, --global      Use file stack.json in global
     -y, --yaml        Use yaml file type instead of json
     -i, --item        Use to input array of parameter
-    --add-item        Add item to row in stack-config in global
-    --remove-item     Remove item from row in stack-config in global
-    --get-row        	Print all items of row in stack-config in global
-    --add-row         Add row to stack-config in global
-    --remove-row      Remove row from stack-config in global
-    --hide-row        Hide row in stack-config in global
-    --show-row        Show row that hide in stack-config in global
-    --get-all         Print stack-config in global
+    -n, --no          Not create out file
+    --sort            Sort row of table
 
   Examples
     $ stack --generate --show
@@ -188,6 +182,22 @@ When you remove row, it's no longer show in ```--show```. Therefore, use ```--al
 
 ```bash
 stack --show --all
+```
+
+## Advance
+
+### Usage
+```bash
+    --untick-all      Untick all row
+    --unremove-all    Unremove all row
+    --add-item        Add item to row in stack-config in global
+    --remove-item     Remove item from row in stack-config in global
+    --get-row        	Print all items of row in stack-config in global
+    --add-row         Add row to stack-config in global
+    --remove-row      Remove row from stack-config in global
+    --hide-row        Hide row in stack-config in global
+    --show-row        Show row that hide in stack-config in global
+    --get-all         Print stack-config in global
 ```
 
 ### 6. Add item to row

@@ -6,6 +6,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2021-03-03
+### Added
+- Support XML format.
+- Get stack of config by value.
+- Sort rows of table by value.
+- Show tree with color.
+- Get state of the row by fuzzy search.
+
+### Changed
+- Use Object-treeify instead of Treeify.
+- Display array in tree as list.
+- Remove checkOneState, checkAllState function.
+
+## [1.5.0] - 2021-02-24
+### Added
+- --no, -n to nto create stack.json file.
+- Get state of the row by value.
+- Support JSON5 format.
+- Show interactive UI when 2 row with same value.
+- Use rewiremock to mock test.
+- --sort to sort stack by key in table.
+
+### Changed
+- Use Cli-table3 instead of Cli-table
+
+### Fixed
+- Fix --untick-all, --unremove-all not working.
+- Fix --untick-all -s show 2 tables.
+- Fix icon in tick row in center.
+
+## [1.4.0] - 2021-02-19
+### Added
+- Support TOML format.
+- --untick-all to untick all rows.
+- --get-state to get state of a single row.
+- --term to not write stack.json.
+- -ha to show full help.
+- Check empty parameters.
+- Show tree in --get-all flag.
+- Auto create .stackconfigfile, .stackfile if not exist.
+
+### Changed
+- Ignore test folder in npm package.
+- Show row "none" in --all flag.
+- Hide row in --get-all flag.
+- Delete .stackconfigfile, .stackfile by default.
+
+### Fixed
+- Fix -gs not work.
+- Fix help show wrong pad.
+
 ## [1.3.0] - 2021-02-07
 ### Added
 - Tick row by name of tech.
