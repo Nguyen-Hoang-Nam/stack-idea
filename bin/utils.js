@@ -1,4 +1,5 @@
 const prompt = require('./prompt');
+const chalk = require('chalk');
 
 const symbols = {
 	tick: {
@@ -417,6 +418,40 @@ exports.isManipulate = (args, manipulateList) => {
 	return false;
 };
 
+/**
+ * Sort row in table by key
+ *
+ * @param {Object} rows Store all rows
+ * @return {Object}
+ */
+exports.sortByKey = rows => {
+	rows.sort((row1, row2) => {
+		const stack1 = Object.keys(row1)[0];
+		const stack2 = Object.keys(row2)[0];
+
+		return stack1.localeCompare(stack2);
+	});
+
+	return rows;
+};
+
+/**
+ * Sort row in table by value
+ *
+ * @param {Object} rows Store al rows
+ * @return {Object}
+ */
+exports.sortByValue = rows => {
+	rows.sort((row1, row2) => {
+		const stack1 = Object.values(row1)[0];
+		const stack2 = Object.values(row2)[0];
+
+		return stack1[0].localeCompare(stack2[0]);
+	});
+
+	return rows;
+};
+
 // Search
 
 /**
@@ -506,7 +541,7 @@ const configToTree = (config, hidden, tree = {}) => {
 			if (checkProperty(config, element) && acceptRow(hidden, element)) {
 				const value = configToTree(config[element], hidden, tree);
 
-				tree[element] = JSON.stringify(value);
+				tree[chalk.blue(element)] = JSON.stringify(value);
 			}
 		}
 	}
