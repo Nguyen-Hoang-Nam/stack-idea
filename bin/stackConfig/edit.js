@@ -42,16 +42,17 @@ exports.addItem = addItem;
  * @param {string} property - Name of stack
  */
 const getRow = (config, property) => {
-	if (utils.checkDeepProperty(config, property)) {
-		const path = utils.getPropertyPath(config, property);
-		const component = utils.getPathComponent(path);
+	const treeObject = utils.configToTree(config, config.Hidden);
 
-		let row = config;
-		for (const element of component) {
-			row = row[element];
+	if (utils.checkProperty(treeObject, property)) {
+		return property + ' : ' + treeObject[property];
+	}
+
+	const pattern = new RegExp(property, 'g');
+	for (const row in treeObject) {
+		if (utils.checkProperty(treeObject, row) && pattern.test(treeObject[row])) {
+			return row + ' : ' + treeObject[row];
 		}
-
-		console.log(property, ':', row);
 	}
 };
 
@@ -190,7 +191,8 @@ exports.editCommand = (config, args) => {
 	} else if (args['remove-item']) {
 		removeItem(config, args['remove-item'], args.item);
 	} else if (args['get-row']) {
-		getRow(config, args['get-row']);
+		const row = getRow(config, args['get-row']);
+		console.log(row);
 	} else if (args['add-row']) {
 		addRow(config, args['add-row'], args.item);
 	} else if (args['remove-row']) {

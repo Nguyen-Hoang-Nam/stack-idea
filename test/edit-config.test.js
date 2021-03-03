@@ -1,8 +1,9 @@
 const test = require('ava');
+const cloneDeep = require('lodash.clonedeep');
 
 const editConfig = require('../bin/stackConfig/edit');
 
-const data = {
+const config = {
 	Render: [
 		{
 			Name: 'Server-Side'
@@ -26,11 +27,14 @@ const data = {
 	Database: [
 		'Oracle',
 		'MySQL'
-	]
+	],
+	Hidden: []
 };
 
 test('Add item to stack-config', t => {
-	t.deepEqual(editConfig.addItem(data, 'GraphQL Framework', 'Apollo'), {
+	const configClone = cloneDeep(config);
+
+	t.deepEqual(editConfig.addItem(configClone, 'GraphQL Framework', 'Apollo'), {
 		Render: [
 			{
 				Name: 'Server-Side'
@@ -55,12 +59,23 @@ test('Add item to stack-config', t => {
 		Database: [
 			'Oracle',
 			'MySQL'
-		]
+		],
+		Hidden: []
 	});
 });
 
+test('Get row by stack name', t => {
+	t.is(editConfig.getRow(config, 'GraphQL Framework'), 'GraphQL Framework : ["None","Relay"]');
+});
+
+test('Get row by value', t => {
+	t.is(editConfig.getRow(config, 'MySQL'), 'Database : ["Oracle","MySQL"]');
+});
+
 test('Remove item from stack-config', t => {
-	t.deepEqual(editConfig.removeItem(data, 'GraphQL Framework', 'Relay'), {
+	const configClone = cloneDeep(config);
+
+	t.deepEqual(editConfig.removeItem(configClone, 'GraphQL Framework', 'Relay'), {
 		Render: [
 			{
 				Name: 'Server-Side'
@@ -74,8 +89,7 @@ test('Remove item from stack-config', t => {
 					{
 						Name: 'GraphQL',
 						'GraphQL Framework': [
-							'None',
-							'Apollo'
+							'None'
 						]
 					}
 				]
@@ -84,12 +98,15 @@ test('Remove item from stack-config', t => {
 		Database: [
 			'Oracle',
 			'MySQL'
-		]
+		],
+		Hidden: []
 	});
 });
 
 test('Add row to stack-config', t => {
-	t.deepEqual(editConfig.addRow(data, 'Test', ['Jest', 'Ava']), {
+	const configClone = cloneDeep(config);
+
+	t.deepEqual(editConfig.addRow(configClone, 'Test', ['Jest', 'Ava']), {
 		Render: [
 			{
 				Name: 'Server-Side'
@@ -104,7 +121,7 @@ test('Add row to stack-config', t => {
 						Name: 'GraphQL',
 						'GraphQL Framework': [
 							'None',
-							'Apollo'
+							'Relay'
 						]
 					}
 				]
@@ -114,12 +131,15 @@ test('Add row to stack-config', t => {
 			'Oracle',
 			'MySQL'
 		],
-		Test: ['Jest', 'Ava']
+		Test: ['Jest', 'Ava'],
+		Hidden: []
 	});
 });
 
 test('Remove row to stack-config', t => {
-	t.deepEqual(editConfig.removeRow(data, 'API'), {
+	const configClone = cloneDeep(config);
+
+	t.deepEqual(editConfig.removeRow(configClone, 'API'), {
 		Render: [
 			{
 				Name: 'Server-Side'
@@ -132,6 +152,6 @@ test('Remove row to stack-config', t => {
 			'Oracle',
 			'MySQL'
 		],
-		Test: ['Jest', 'Ava']
+		Hidden: []
 	});
 });
