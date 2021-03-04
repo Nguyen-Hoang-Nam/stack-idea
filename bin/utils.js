@@ -6,11 +6,11 @@ const symbols = {
 		linux: '✔',
 		window: '√'
 	},
-	checkbox: {
+	untick: {
 		linux: '☐',
 		window: '[ ]'
 	},
-	cross: {
+	remove: {
 		linux: '✖',
 		window: '×'
 	}
@@ -212,21 +212,11 @@ exports.getPathComponent = path => {
 /**
  * Generate symbol from state.
  *
- * @param {} state
+ * @param {string} state Store state of the row
  * @return {string}
  */
 exports.tickSymbolByState = state => {
-	if (state === 'untick') {
-		return symbol('checkbox');
-	}
-
-	if (state === 'tick') {
-		return symbol('tick');
-	}
-
-	if (state === 'remove') {
-		return symbol('cross');
-	}
+	return symbol(state);
 };
 
 /**
@@ -436,12 +426,12 @@ exports.isManipulate = (args, manipulateList) => {
  * @param {Object} rows Store all rows
  * @return {Object}
  */
-exports.sortByKey = rows => {
+exports.sortByKey = (rows, isDecreasing) => {
 	rows.sort((row1, row2) => {
 		const stack1 = Object.keys(row1)[0];
 		const stack2 = Object.keys(row2)[0];
 
-		return stack1.localeCompare(stack2);
+		return (isDecreasing ? -1 : 1) * stack1.localeCompare(stack2);
 	});
 
 	return rows;
@@ -453,12 +443,12 @@ exports.sortByKey = rows => {
  * @param {Object} rows Store al rows
  * @return {Object}
  */
-exports.sortByValue = rows => {
+exports.sortByValue = (rows, isDecreasing) => {
 	rows.sort((row1, row2) => {
 		const stack1 = Object.values(row1)[0];
 		const stack2 = Object.values(row2)[0];
 
-		return stack1[0].localeCompare(stack2[0]);
+		return (isDecreasing ? -1 : 1) * stack1[0].localeCompare(stack2[0]);
 	});
 
 	return rows;

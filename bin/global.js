@@ -16,7 +16,8 @@ exports.minimistConfig = {
 		G: 'global',
 		y: 'yaml',
 		i: 'item',
-		n: 'no'
+		n: 'no',
+		d: 'decrease'
 	}
 };
 

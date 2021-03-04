@@ -141,9 +141,9 @@ exports.showTable = (stack, args) => {
 
 	if (args.sort) {
 		if (args.sort === 'key') {
-			utils.sortByKey(rows);
+			utils.sortByKey(rows, args.decrease);
 		} else if (args.sort === 'value') {
-			utils.sortByValue(rows);
+			utils.sortByValue(rows, args.decrease);
 		}
 	}
 
