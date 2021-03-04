@@ -454,6 +454,41 @@ exports.sortByValue = (rows, isDecreasing) => {
 	return rows;
 };
 
+
+/**
+ * Count number of property in object
+ *
+ * @param {Object} object
+ * @return {number}
+ */
+exports.countTotalProperty = object => {
+	let count = 0;
+	for (const property in object) {
+		if (checkProperty(object, property)) {
+			count++;
+		}
+	}
+
+	return count;
+};
+
+/**
+ * Count number of tick row in object
+ *
+ * @param {Object} object
+ * @return {number}
+ */
+exports.countTickProperty = object => {
+	let count = 0;
+	for (const property in object) {
+		if (checkProperty(object, property) && object[property].Tick === 'tick') {
+			count++;
+		}
+	}
+
+	return count;
+}
+
 // Search
 
 /**

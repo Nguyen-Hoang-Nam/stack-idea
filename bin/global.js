@@ -17,7 +17,8 @@ exports.minimistConfig = {
 		y: 'yaml',
 		i: 'item',
 		n: 'no',
-		d: 'decrease'
+		d: 'decrease',
+		p: 'progress'
 	}
 };
 
@@ -81,6 +82,7 @@ exports.manipulateStack = [
 	'show',
 	'get-state',
 	'untick-all',
-	'unremove-all'
+	'unremove-all',
+	'progress'
 ];
 
