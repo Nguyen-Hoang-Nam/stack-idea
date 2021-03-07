@@ -64,12 +64,18 @@ test('Add item to stack-config', t => {
 	});
 });
 
-test('Get row by stack name', t => {
-	t.is(editConfig.getRow(config, 'GraphQL Framework'), 'GraphQL Framework : ["None","Relay"]');
+test('Get row by stack name', async t => {
+	const configClone = cloneDeep(config);
+	const row = await editConfig.getRow(configClone, 'GraphQL Framework');
+
+	t.is(row, 'GraphQL Framework : None, Relay');
 });
 
-test('Get row by value', t => {
-	t.is(editConfig.getRow(config, 'MySQL'), 'Database : ["Oracle","MySQL"]');
+test('Get row by value', async t => {
+	const configClone = cloneDeep(config);
+	const row = await editConfig.getRow(configClone, 'MySQL');
+
+	t.is(row, 'Database : Oracle, MySQL');
 });
 
 test('Remove item from stack-config', t => {

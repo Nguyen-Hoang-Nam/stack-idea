@@ -16,7 +16,6 @@ const progressBar = (archive, total) => {
 
 exports.progressBar = progressBar;
 
-
 /**
  * Create progress bar for tick row
  *

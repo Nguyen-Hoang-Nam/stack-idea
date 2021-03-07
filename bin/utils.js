@@ -1,4 +1,3 @@
-const prompt = require('./prompt');
 const chalk = require('chalk');
 
 const symbols = {
@@ -90,6 +89,17 @@ const getAllByValue = (object, value) => {
 };
 
 exports.getAllByValue = getAllByValue;
+
+exports.getAllByState = (stack, state) => {
+	const result = [];
+	for (const row in stack) {
+		if (stack[row].Tick === state) {
+			result.push(row);
+		}
+	}
+
+	return result;
+};
 
 /**
  * Check empty value to reduce recursive.
@@ -220,93 +230,6 @@ exports.tickSymbolByState = state => {
 };
 
 /**
- * Tick rows by property.
- *
- * @param {Object} stack - Store stack
- * @param {(string | string[])} property - Name of stack
- * @param {string} state - State of row
- * @return {Object}
- */
-exports.tickOneOrManyByProperty = (stack, property, state) => {
-	const type = checkEmpty(property);
-
-	if (type === 1) {
-		if (checkProperty(stack, property)) {
-			stack[property].Tick = state;
-		}
-	} else if (type === 2) {
-		const temporary = [];
-		for (const element of property) {
-			if (checkProperty(stack, element)) {
-				stack[element].Tick = state;
-				temporary.push(element);
-			}
-		}
-
-		removeAll(property, temporary);
-	}
-
-	return stack;
-};
-
-/**
- * Tick one row by value.
- *
- * @param {Object} stack - Store stack
- * @param {string} value - Name of tech in stack
- * @param {string} state - State of stack
- * @param {boolean} isSingle
- */
-const tickOneByValue = async (stack, value, state, isChoice = false) => {
-	const matching = getAllByValue(stack, value);
-
-	if (matching.length > 1 && isChoice) {
-		const choices = [];
-
-		for (const row of matching) {
-			choices.push({
-				name: `${row} | ${stack[row].Name}`,
-				value: row
-			});
-		}
-
-		const chooseResult = await prompt.searchResultPrompt(choices, value);
-		stack[chooseResult.result].Tick = state;
-	} else if (matching.length === 1) {
-		stack[matching[0]].Tick = state;
-	}
-};
-
-/**
- * Tick all matching rows by value.
- *
- * @param {Object} stack - Store stack
- * @param {(string | string[])} value - Name of tech in stack
- * @param {string} state - State of stack
- * @return {Object}
- */
-exports.tickOneOrManyByValue = async (stack, value, state) => {
-	const type = checkEmpty(value);
-
-	if (type === 1) {
-		await tickOneByValue(stack, value, state, true);
-	} else if (type === 2) {
-		const temporary = [];
-		const promises = [];
-
-		for (const element of value) {
-			promises.push(tickOneByValue(stack, element, state));
-			temporary.push(element);
-		}
-
-		Promise.all(promises);
-		removeAll(value, temporary);
-	}
-
-	return stack;
-};
-
-/**
  * Convert old state of row to new state.
  *
  * @param {Object} stack - Store stack
@@ -322,56 +245,6 @@ exports.convertState = (stack, oldState, newState) => {
 	}
 
 	return stack;
-};
-
-/**
- * Check properties exist in stack.
- *
- * @param {Object} stack - Store stack
- * @param {(string | string[])} property - Name of stack
- * @return {boolean}
- */
-exports.checkOneOrManyByProperty = (stack, property) => {
-	const type = checkEmpty(property);
-
-	if (type === 1) {
-		if (checkProperty(stack, property)) {
-			return true;
-		}
-	} else if (type === 2) {
-		for (const element of property) {
-			if (checkProperty(stack, element)) {
-				return true;
-			}
-		}
-	}
-
-	return false;
-};
-
-/**
- * Check values exist in stack.
- *
- * @param {Object} stack - Store stack
- * @param {(string | string[])} value - Name of tech in stack
- * @return {boolean}
- */
-exports.checkOneOrManyByValue = (stack, value) => {
-	const type = checkEmpty(value);
-
-	if (type === 1) {
-		if (checkValue(stack, value)) {
-			return true;
-		}
-	} else if (type === 2) {
-		for (const element of value) {
-			if (checkValue(stack, element)) {
-				return true;
-			}
-		}
-	}
-
-	return false;
 };
 
 /**
@@ -454,7 +327,6 @@ exports.sortByValue = (rows, isDecreasing) => {
 	return rows;
 };
 
-
 /**
  * Count number of property in object
  *
@@ -487,7 +359,7 @@ exports.countTickProperty = object => {
 	}
 
 	return count;
-}
+};
 
 // Search
 
@@ -581,7 +453,7 @@ const configToTree = (config, hidden, isColor = false, tree = {}) => {
 				if (isColor) {
 					tree[chalk.blue(element)] = value.join(', ');
 				} else {
-					tree[element] = JSON.stringify(value);
+					tree[element] = value.join(', ');
 				}
 			}
 		}
