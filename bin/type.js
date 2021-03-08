@@ -4,6 +4,7 @@ const TOML = require('@iarna/toml');
 const JSON5 = require('json5');
 const XML = require('xml-js');
 const MD = require('./type/markdown');
+const HTML = require('./type/html');
 
 /**
  * Write stack to file.
@@ -24,6 +25,8 @@ exports.write = (stack, type) => {
 			return XML.js2xml(stack, {compact: true, spaces: 4});
 		case 'md':
 			return MD.stackToMarkdownTable(stack);
+		case 'html':
+			return HTML.write(stack);
 		default:
 			return JSON5.stringify(stack, null, 2);
 	}
@@ -48,6 +51,8 @@ exports.read = (buffer, type) => {
 			return XML.xml2js(buffer, {compact: true, spaces: 4});
 		case 'md':
 			return MD.markdownTableToStack(buffer);
+		case 'html':
+			return HTML.read(buffer);
 		default:
 			return JSON5.parse(buffer.toString());
 	}

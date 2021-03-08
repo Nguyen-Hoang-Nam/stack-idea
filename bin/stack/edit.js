@@ -82,6 +82,7 @@ exports.tickOneState = tickOneState;
  */
 exports.untickAll = stack => {
 	utils.convertState(stack, 'tick', 'untick');
+	utils.convertState(stack, 'remove', 'untick');
 
 	return stack;
 };

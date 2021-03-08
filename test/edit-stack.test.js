@@ -125,7 +125,7 @@ test('Untick all rows', t => {
 		},
 		API: {
 			Name: 'REST',
-			Tick: 'remove'
+			Tick: 'untick'
 		},
 		'JS Framework': {
 			Name: 'Vue',
