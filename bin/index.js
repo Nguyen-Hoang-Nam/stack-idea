@@ -10,6 +10,7 @@ const file = require('./file');
 const editConfig = require('./stackConfig/edit');
 const message = require('./message');
 const utils = require('./utils');
+const progress = require('./progress');
 
 const args = minimist(process.argv.slice(2), global.minimistConfig);
 
@@ -57,6 +58,9 @@ if (args.generate) {
 		} else if (args['unremove-all']) {
 			editStack.unremoveAll(stack);
 			file.writeFile(global.STORE, stack, args);
+		} else if (args.progress) {
+			const progressBar = progress.progressTick(stack);
+			console.log(progressBar);
 		} else {
 			isShow = false;
 		}

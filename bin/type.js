@@ -3,6 +3,8 @@ const CSV = require('./type/csv');
 const TOML = require('@iarna/toml');
 const JSON5 = require('json5');
 const XML = require('xml-js');
+const MD = require('./type/markdown');
+const HTML = require('./type/html');
 
 /**
  * Write stack to file.
@@ -12,23 +14,22 @@ const XML = require('xml-js');
  * @return {string}
  */
 exports.write = (stack, type) => {
-	if (type === 'yaml') {
-		return YAML.dump(stack);
+	switch (type) {
+		case 'yaml':
+			return YAML.dump(stack);
+		case 'toml':
+			return TOML.stringify(stack);
+		case 'csv':
+			return CSV.write(stack);
+		case 'xml':
+			return XML.js2xml(stack, {compact: true, spaces: 4});
+		case 'md':
+			return MD.stackToMarkdownTable(stack);
+		case 'html':
+			return HTML.write(stack);
+		default:
+			return JSON5.stringify(stack, null, 2);
 	}
-
-	if (type === 'toml') {
-		return TOML.stringify(stack);
-	}
-
-	if (type === 'csv') {
-		return CSV.write(stack);
-	}
-
-	if (type === 'xml') {
-		return XML.js2xml(stack, {compact: true, spaces: 4});
-	}
-
-	return JSON5.stringify(stack, null, 2);
 };
 
 /**
@@ -39,22 +40,20 @@ exports.write = (stack, type) => {
  * @return {Object}
  */
 exports.read = (buffer, type) => {
-	if (type === 'yaml') {
-		return YAML.load(buffer);
+	switch (type) {
+		case 'yaml':
+			return YAML.load(buffer);
+		case 'toml':
+			return TOML.parse(buffer);
+		case 'csv':
+			return CSV.read(buffer);
+		case 'xml':
+			return XML.xml2js(buffer, {compact: true, spaces: 4});
+		case 'md':
+			return MD.markdownTableToStack(buffer);
+		case 'html':
+			return HTML.read(buffer);
+		default:
+			return JSON5.parse(buffer.toString());
 	}
-
-	if (type === 'toml') {
-		return TOML.parse(buffer);
-	}
-
-	if (type === 'csv') {
-		return CSV.read(buffer);
-	}
-
-	if (type === 'xml') {
-		return XML.xml2js(buffer, {compact: true, spaces: 4});
-	}
-
-	return JSON5.parse(buffer.toString());
 };
-

@@ -16,7 +16,9 @@ exports.minimistConfig = {
 		G: 'global',
 		y: 'yaml',
 		i: 'item',
-		n: 'no'
+		n: 'no',
+		d: 'decrease',
+		p: 'progress'
 	}
 };
 
@@ -43,7 +45,8 @@ exports.fuseConfig = {
  * Generate config for search.
  *
  * @param {string} message - Question ask user to choose
- * @param {object[]} choices - List of options
+ * @param {Object[]} choices - List of options
+ * @return {Object}
  */
 exports.searchPromptConfig = (message, choices) => ([
 	{
@@ -80,6 +83,7 @@ exports.manipulateStack = [
 	'show',
 	'get-state',
 	'untick-all',
-	'unremove-all'
+	'unremove-all',
+	'progress'
 ];
 

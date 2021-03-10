@@ -1,6 +1,5 @@
 const test = require('ava');
 const stripAnsi = require('strip-ansi');
-const cloneDeep = require('lodash.clonedeep');
 
 const utils = require('../bin/utils');
 
@@ -22,100 +21,6 @@ const stack = {
 // Manipulate stack fie
 test('Show tick icon', t => {
 	t.true(stripAnsi(utils.tickSymbolByState('tick')) === '✔' || stripAnsi(utils.tickSymbolByState('tick')) === '√');
-});
-
-test('Tick one row by property', t => {
-	const stackClone = cloneDeep(stack);
-
-	t.deepEqual(utils.tickOneOrManyByProperty(stackClone, 'API', 'tick'), {
-		Render: {
-			Name: 'Client-Side',
-			Tick: 'untick'
-		},
-		API: {
-			Name: 'REST',
-			Tick: 'tick'
-		},
-		'JS Framework': {
-			Name: 'Vue',
-			Tick: 'untick'
-		}
-	});
-});
-
-test('Tick many rows by property', t => {
-	const stackClone = cloneDeep(stack);
-
-	t.deepEqual(utils.tickOneOrManyByProperty(stackClone, ['API', 'JS Framework'], 'remove'), {
-		Render: {
-			Name: 'Client-Side',
-			Tick: 'untick'
-		},
-		API: {
-			Name: 'REST',
-			Tick: 'remove'
-		},
-		'JS Framework': {
-			Name: 'Vue',
-			Tick: 'remove'
-		}
-	});
-});
-
-test('Tick one row by value', async t => {
-	const stackClone = cloneDeep(stack);
-	const result = await utils.tickOneOrManyByValue(stackClone, 'REST', 'tick');
-
-	t.deepEqual(result, {
-		Render: {
-			Name: 'Client-Side',
-			Tick: 'untick'
-		},
-		API: {
-			Name: 'REST',
-			Tick: 'tick'
-		},
-		'JS Framework': {
-			Name: 'Vue',
-			Tick: 'untick'
-		}
-	});
-});
-
-test('Tick many rows by value', async t => {
-	const stackClone = cloneDeep(stack);
-	const result = await utils.tickOneOrManyByValue(stackClone, ['Client-Side', 'Vue'], 'tick');
-
-	t.deepEqual(result, {
-		Render: {
-			Name: 'Client-Side',
-			Tick: 'tick'
-		},
-		API: {
-			Name: 'REST',
-			Tick: 'untick'
-		},
-		'JS Framework': {
-			Name: 'Vue',
-			Tick: 'tick'
-		}
-	});
-});
-
-test('Check property exist', t => {
-	t.is(utils.checkOneOrManyByProperty(stack, 'API'), true);
-});
-
-test('Check properties exist', t => {
-	t.is(utils.checkOneOrManyByProperty(stack, ['API', 'JS Framework']), true);
-});
-
-test('Check value exist', t => {
-	t.is(utils.checkOneOrManyByValue(stack, 'REST'), true);
-});
-
-test('Check values exist', t => {
-	t.is(utils.checkOneOrManyByValue(stack, ['Client-Side', 'Vue']), true);
 });
 
 // Search
@@ -211,9 +116,9 @@ test('Check hidden row', t => {
 
 test('Convert config object to treeify object', t => {
 	t.deepEqual(utils.configToTree(config, config.Hidden), {
-		'GraphQL Framework': '["None","Relay"]',
-		API: '["REST","GraphQL"]',
-		Render: '["Server-Side","Client-Side"]'
+		'GraphQL Framework': 'None, Relay',
+		API: 'REST, GraphQL',
+		Render: 'Server-Side, Client-Side'
 	});
 });
 

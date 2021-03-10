@@ -1,6 +1,6 @@
 {
   "name": "stack-idea",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Generate stack for your whole new idea",
   "main": "bin/index.js",
   "author": {
