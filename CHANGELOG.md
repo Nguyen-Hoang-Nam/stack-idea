@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2021-03-10
+### Added
+- --descrease, -d to sort descreasing table.
+- --progress, -p to show progress of tick.
+- Support Markdown format.
+- Support HTML format.
+- Get state of multiple rows.
+- Tick multiple rows by fuzzy search.
+- Get stack by fuzzy search.
+
+### Changed
+- Untick remove in --untick-flag.
+- Delete tickOneOrManyByValue, tickOneOrManyByProperty, tickByFuzzy.
+- Not show row that already tick in choice UI.
+
 ## [1.6.0] - 2021-03-03
 ### Added
 - Support XML format.
@@ -19,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Display array in tree as list.
 - Remove checkOneState, checkAllState function.
 
-## [1.5.0] - 2021-02-24
+## [1.5.0] - 2021-02-23
 ### Added
 - --no, -n to nto create stack.json file.
 - Get state of the row by value.
@@ -36,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix --untick-all -s show 2 tables.
 - Fix icon in tick row in center.
 
-## [1.4.0] - 2021-02-19
+## [1.4.0] - 2021-02-18
 ### Added
 - Support TOML format.
 - --untick-all to untick all rows.

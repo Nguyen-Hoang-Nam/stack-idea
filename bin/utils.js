@@ -297,6 +297,7 @@ exports.isManipulate = (args, manipulateList) => {
  * Sort row in table by key
  *
  * @param {Object} rows Store all rows
+ * @param {boolean} isDecreasing
  * @return {Object}
  */
 exports.sortByKey = (rows, isDecreasing) => {
@@ -314,6 +315,7 @@ exports.sortByKey = (rows, isDecreasing) => {
  * Sort row in table by value
  *
  * @param {Object} rows Store al rows
+ * @param {boolean} isDecreasing
  * @return {Object}
  */
 exports.sortByValue = (rows, isDecreasing) => {
