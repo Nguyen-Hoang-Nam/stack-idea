@@ -1,5 +1,8 @@
-const utils = require('../utils');
 const treeify = require('object-treeify');
+
+const utils = require('../utils');
+const search = require('../search');
+const prompt = require('../prompt');
 
 /**
  * Add tech to stack config.
@@ -41,18 +44,40 @@ exports.addItem = addItem;
  * @param {Object} config - Store config
  * @param {string} property - Name of stack
  */
-const getRow = (config, property) => {
+const getRow = async (config, property) => {
 	const treeObject = utils.configToTree(config, config.Hidden);
 
 	if (utils.checkProperty(treeObject, property)) {
 		return property + ' : ' + treeObject[property];
 	}
 
-	const pattern = new RegExp(property, 'g');
 	for (const row in treeObject) {
-		if (utils.checkProperty(treeObject, row) && pattern.test(treeObject[row])) {
-			return row + ' : ' + treeObject[row];
+		if (utils.checkProperty(treeObject, row)) {
+			const techList = treeObject[row].split(', ');
+			if (techList.includes(property)) {
+				return row + ' : ' + treeObject[row];
+			}
 		}
+	}
+
+	const properties = Object.keys(treeObject);
+	const searchResult = search.getFuzzy(properties, property);
+	if (searchResult.length > 0) {
+		const choices = [];
+
+		for (const element of searchResult) {
+			const item = element.item;
+			const temporary = {
+				name: `${item} | ${treeObject[item]}`,
+				value: item
+			};
+
+			choices.push(temporary);
+		}
+
+		const choice = await prompt.searchResultPrompt(choices, property);
+		const row = choice.result;
+		return row + ' : ' + treeObject[row];
 	}
 };
 
@@ -191,8 +216,7 @@ exports.editCommand = (config, args) => {
 	} else if (args['remove-item']) {
 		removeItem(config, args['remove-item'], args.item);
 	} else if (args['get-row']) {
-		const row = getRow(config, args['get-row']);
-		console.log(row);
+		getRow(config, args['get-row']).then(row => console.log(row));
 	} else if (args['add-row']) {
 		addRow(config, args['add-row'], args.item);
 	} else if (args['remove-row']) {

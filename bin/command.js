@@ -58,6 +58,7 @@ exports.help = args => {
 	helpCommand('-i, --item ', 'Use to input array of parameter');
 	helpCommand('-n, --no', 'Not create output file');
 	helpCommand('--sort', 'Sort row of table');
+	helpCommand('-d, --decrease', 'Sort by decreasing');
 
 	if (args.help && args.all) {
 		helpCommand('--untick-all', 'Untick all row');

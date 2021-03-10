@@ -1,4 +1,3 @@
-const prompt = require('./prompt');
 const chalk = require('chalk');
 
 const symbols = {
@@ -6,11 +5,11 @@ const symbols = {
 		linux: '✔',
 		window: '√'
 	},
-	checkbox: {
+	untick: {
 		linux: '☐',
 		window: '[ ]'
 	},
-	cross: {
+	remove: {
 		linux: '✖',
 		window: '×'
 	}
@@ -90,6 +89,17 @@ const getAllByValue = (object, value) => {
 };
 
 exports.getAllByValue = getAllByValue;
+
+exports.getAllByState = (stack, state) => {
+	const result = [];
+	for (const row in stack) {
+		if (stack[row].Tick === state) {
+			result.push(row);
+		}
+	}
+
+	return result;
+};
 
 /**
  * Check empty value to reduce recursive.
@@ -212,108 +222,11 @@ exports.getPathComponent = path => {
 /**
  * Generate symbol from state.
  *
- * @param {} state
+ * @param {string} state Store state of the row
  * @return {string}
  */
 exports.tickSymbolByState = state => {
-	if (state === 'untick') {
-		return symbol('checkbox');
-	}
-
-	if (state === 'tick') {
-		return symbol('tick');
-	}
-
-	if (state === 'remove') {
-		return symbol('cross');
-	}
-};
-
-/**
- * Tick rows by property.
- *
- * @param {Object} stack - Store stack
- * @param {(string | string[])} property - Name of stack
- * @param {string} state - State of row
- * @return {Object}
- */
-exports.tickOneOrManyByProperty = (stack, property, state) => {
-	const type = checkEmpty(property);
-
-	if (type === 1) {
-		if (checkProperty(stack, property)) {
-			stack[property].Tick = state;
-		}
-	} else if (type === 2) {
-		const temporary = [];
-		for (const element of property) {
-			if (checkProperty(stack, element)) {
-				stack[element].Tick = state;
-				temporary.push(element);
-			}
-		}
-
-		removeAll(property, temporary);
-	}
-
-	return stack;
-};
-
-/**
- * Tick one row by value.
- *
- * @param {Object} stack - Store stack
- * @param {string} value - Name of tech in stack
- * @param {string} state - State of stack
- * @param {boolean} isSingle
- */
-const tickOneByValue = async (stack, value, state, isChoice = false) => {
-	const matching = getAllByValue(stack, value);
-
-	if (matching.length > 1 && isChoice) {
-		const choices = [];
-
-		for (const row of matching) {
-			choices.push({
-				name: `${row} | ${stack[row].Name}`,
-				value: row
-			});
-		}
-
-		const chooseResult = await prompt.searchResultPrompt(choices, value);
-		stack[chooseResult.result].Tick = state;
-	} else if (matching.length === 1) {
-		stack[matching[0]].Tick = state;
-	}
-};
-
-/**
- * Tick all matching rows by value.
- *
- * @param {Object} stack - Store stack
- * @param {(string | string[])} value - Name of tech in stack
- * @param {string} state - State of stack
- * @return {Object}
- */
-exports.tickOneOrManyByValue = async (stack, value, state) => {
-	const type = checkEmpty(value);
-
-	if (type === 1) {
-		await tickOneByValue(stack, value, state, true);
-	} else if (type === 2) {
-		const temporary = [];
-		const promises = [];
-
-		for (const element of value) {
-			promises.push(tickOneByValue(stack, element, state));
-			temporary.push(element);
-		}
-
-		Promise.all(promises);
-		removeAll(value, temporary);
-	}
-
-	return stack;
+	return symbol(state);
 };
 
 /**
@@ -332,56 +245,6 @@ exports.convertState = (stack, oldState, newState) => {
 	}
 
 	return stack;
-};
-
-/**
- * Check properties exist in stack.
- *
- * @param {Object} stack - Store stack
- * @param {(string | string[])} property - Name of stack
- * @return {boolean}
- */
-exports.checkOneOrManyByProperty = (stack, property) => {
-	const type = checkEmpty(property);
-
-	if (type === 1) {
-		if (checkProperty(stack, property)) {
-			return true;
-		}
-	} else if (type === 2) {
-		for (const element of property) {
-			if (checkProperty(stack, element)) {
-				return true;
-			}
-		}
-	}
-
-	return false;
-};
-
-/**
- * Check values exist in stack.
- *
- * @param {Object} stack - Store stack
- * @param {(string | string[])} value - Name of tech in stack
- * @return {boolean}
- */
-exports.checkOneOrManyByValue = (stack, value) => {
-	const type = checkEmpty(value);
-
-	if (type === 1) {
-		if (checkValue(stack, value)) {
-			return true;
-		}
-	} else if (type === 2) {
-		for (const element of value) {
-			if (checkValue(stack, element)) {
-				return true;
-			}
-		}
-	}
-
-	return false;
 };
 
 /**
@@ -434,14 +297,15 @@ exports.isManipulate = (args, manipulateList) => {
  * Sort row in table by key
  *
  * @param {Object} rows Store all rows
+ * @param {boolean} isDecreasing
  * @return {Object}
  */
-exports.sortByKey = rows => {
+exports.sortByKey = (rows, isDecreasing) => {
 	rows.sort((row1, row2) => {
 		const stack1 = Object.keys(row1)[0];
 		const stack2 = Object.keys(row2)[0];
 
-		return stack1.localeCompare(stack2);
+		return (isDecreasing ? -1 : 1) * stack1.localeCompare(stack2);
 	});
 
 	return rows;
@@ -451,17 +315,52 @@ exports.sortByKey = rows => {
  * Sort row in table by value
  *
  * @param {Object} rows Store al rows
+ * @param {boolean} isDecreasing
  * @return {Object}
  */
-exports.sortByValue = rows => {
+exports.sortByValue = (rows, isDecreasing) => {
 	rows.sort((row1, row2) => {
 		const stack1 = Object.values(row1)[0];
 		const stack2 = Object.values(row2)[0];
 
-		return stack1[0].localeCompare(stack2[0]);
+		return (isDecreasing ? -1 : 1) * stack1[0].localeCompare(stack2[0]);
 	});
 
 	return rows;
+};
+
+/**
+ * Count number of property in object
+ *
+ * @param {Object} object
+ * @return {number}
+ */
+exports.countTotalProperty = object => {
+	let count = 0;
+	for (const property in object) {
+		if (checkProperty(object, property)) {
+			count++;
+		}
+	}
+
+	return count;
+};
+
+/**
+ * Count number of tick row in object
+ *
+ * @param {Object} object
+ * @return {number}
+ */
+exports.countTickProperty = object => {
+	let count = 0;
+	for (const property in object) {
+		if (checkProperty(object, property) && object[property].Tick === 'tick') {
+			count++;
+		}
+	}
+
+	return count;
 };
 
 // Search
@@ -556,7 +455,7 @@ const configToTree = (config, hidden, isColor = false, tree = {}) => {
 				if (isColor) {
 					tree[chalk.blue(element)] = value.join(', ');
 				} else {
-					tree[element] = JSON.stringify(value);
+					tree[element] = value.join(', ');
 				}
 			}
 		}
