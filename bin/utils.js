@@ -335,11 +335,11 @@ exports.sortByValue = (rows, isDecreasing) => {
  * @param {Object} object
  * @return {number}
  */
-exports.countTotalProperty = object => {
+exports.countTotalProperty = (object, hidden) => {
 	let count = 0;
 	for (const property in object) {
-		if (checkProperty(object, property)) {
-			count++;
+		if (checkProperty(object, property) && object[property].Name !== 'None') {
+			count += hidden ? (object[property].Tick === 'remove' ? 0 : 1) : 1;
 		}
 	}
 

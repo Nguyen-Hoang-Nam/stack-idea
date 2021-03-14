@@ -59,7 +59,7 @@ if (args.generate) {
 			editStack.unremoveAll(stack);
 			file.writeFile(global.STORE, stack, args);
 		} else if (args.progress) {
-			const progressBar = progress.progressTick(stack);
+			const progressBar = progress.progressTick(stack, args);
 			console.log(progressBar);
 		} else {
 			isShow = false;

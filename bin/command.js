@@ -59,6 +59,7 @@ exports.help = args => {
 	helpCommand('-n, --no', 'Not create output file');
 	helpCommand('--sort', 'Sort row of table');
 	helpCommand('-d, --decrease', 'Sort by decreasing');
+	helpCommand('-p, --progress', 'Show progress of tick row');
 
 	if (args.help && args.all) {
 		helpCommand('--untick-all', 'Untick all row');
