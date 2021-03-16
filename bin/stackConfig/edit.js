@@ -176,8 +176,35 @@ exports.removeRow = removeRow;
  * @param {string} property - Name of stack
  */
 const hiddenRow = (config, property) => {
-	if (utils.checkDeepProperty(config, property)) {
-		config.Hidden.push(property);
+	const treeObject = utils.configToTree(config, config.Hidden);
+
+	if (typeof property === 'string') {
+		property = [property];
+	}
+
+	if (Array.isArray(property)) {
+		for (const item of property) {
+			let found = false;
+
+			if (utils.checkProperty(treeObject, item)) {
+				config.Hidden.push(item);
+				found = true;
+			}
+
+			if (!found) {
+				for (const row in treeObject) {
+					if (utils.checkProperty(treeObject, row)) {
+						const techList = treeObject[row].split(', ');
+						if (techList.includes(item)) {
+							config.Hidden.push(row);
+							found = true;
+						}
+					}
+				}
+			}
+		}
+
+		return config;
 	}
 };
 
@@ -190,12 +217,41 @@ exports.hiddenRow = hiddenRow;
  * @param {string} property - Name of stack
  */
 const showRow = (config, property) => {
-	if (utils.checkDeepProperty(config, property) && config.Hidden.includes(property)) {
-		utils.remove(config.Hidden, property);
+	const treeObject = utils.configToTree(config, []);
+
+	if (typeof property === 'string') {
+		property = [property];
+	}
+
+	if (Array.isArray(property)) {
+		for (const item of property) {
+			let found = false;
+
+			if (utils.checkProperty(treeObject, item)) {
+				utils.remove(config.Hidden, item);
+				found = true;
+			}
+
+			if (!found) {
+				for (const row in treeObject) {
+					if (utils.checkProperty(treeObject, row)) {
+						const techList = treeObject[row].split(', ');
+						if (techList.includes(item)) {
+							utils.remove(config.Hidden, row);
+							found = true;
+						}
+					}
+				}
+			}
+		}
+
+		return config;
 	}
 };
 
 exports.showRow = showRow;
+
+const getHiddenRow = config => config.Hidden;
 
 /**
  * Print confi to screen.
@@ -227,6 +283,9 @@ exports.editCommand = (config, args) => {
 		showRow(config, args['show-row']);
 	} else if (args['get-all']) {
 		getAll(config);
+	} else if (args['get-hidden']) {
+		const hidden = getHiddenRow(config);
+		console.log(hidden);
 	}
 
 	return config;

@@ -59,7 +59,7 @@ if (args.generate) {
 			editStack.unremoveAll(stack);
 			file.writeFile(global.STORE, stack, args);
 		} else if (args.progress) {
-			const progressBar = progress.progressTick(stack);
+			const progressBar = progress.progressTick(stack, args);
 			console.log(progressBar);
 		} else {
 			isShow = false;
@@ -77,7 +77,9 @@ if (args.generate) {
 		file.writeFile(global.CONFIG, config, args);
 	});
 } else if (args.version) {
-	command.version();
+	const version = command.version();
+	console.log(version);
 } else {
-	command.help(args);
+	const help = command.help(args);
+	console.log(help);
 }

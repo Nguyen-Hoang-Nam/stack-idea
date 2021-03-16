@@ -73,7 +73,8 @@ exports.manipulateStackConfig = [
 	'remove-row',
 	'hide-row',
 	'show-row',
-	'get-all'
+	'get-all',
+	'get-hidden'
 ];
 
 exports.manipulateStack = [

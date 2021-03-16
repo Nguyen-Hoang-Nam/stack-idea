@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2021-03-16
+### Added
+- -a to count remove in progress.
+- Show color in progress.
+- Show archive/total in progress.
+- Get all hidden config.
+- Hidden multiple config rows.
+- Hidden config rows by value.
+- Show multiple config rows.
+- Show config rows by value.
+
+### Changed
+- Not count 'none' row in progress
+- Not count remove row in progress by default
+
 ## [1.7.0] - 2021-03-10
 ### Added
 - --descrease, -d to sort descreasing table.
