@@ -217,8 +217,35 @@ exports.hiddenRow = hiddenRow;
  * @param {string} property - Name of stack
  */
 const showRow = (config, property) => {
-	if (utils.checkDeepProperty(config, property) && config.Hidden.includes(property)) {
-		utils.remove(config.Hidden, property);
+	const treeObject = utils.configToTree(config, []);
+
+	if (typeof property === 'string') {
+		property = [property];
+	}
+
+	if (Array.isArray(property)) {
+		for (const item of property) {
+			let found = false;
+
+			if (utils.checkProperty(treeObject, item)) {
+				utils.remove(config.Hidden, item);
+				found = true;
+			}
+
+			if (!found) {
+				for (const row in treeObject) {
+					if (utils.checkProperty(treeObject, row)) {
+						const techList = treeObject[row].split(', ');
+						if (techList.includes(item)) {
+							utils.remove(config.Hidden, row);
+							found = true;
+						}
+					}
+				}
+			}
+		}
+
+		return config;
 	}
 };
 

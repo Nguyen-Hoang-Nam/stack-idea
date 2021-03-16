@@ -126,8 +126,7 @@
     'Caddy',
   ],
   Hidden: [
-    'Network',
-    'Wasm',
     'JS Framework',
+    'Server',
   ],
 }
