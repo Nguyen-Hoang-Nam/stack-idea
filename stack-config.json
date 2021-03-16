@@ -126,6 +126,7 @@
     'Caddy',
   ],
   Hidden: [
-    'Test',
+    'JS Framework',
+    'Server',
   ],
 }
