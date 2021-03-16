@@ -11,8 +11,12 @@ const utils = require('./utils');
 const progressBar = (archive, total) => {
 	const percent = Math.round(archive * 100 / total);
 	const progress = Math.round(percent / 10) * 2;
+	const support = process.platform;
 
-	return `Progress [${chalk.blue('=').repeat(progress)}${'-'.repeat(20 - progress)}] ${percent}% | ${archive}/${total}`;
+	const archiveIcon = support ? '\u2588' : '=';
+	const otherIcon = support ? '\u2591' : '-';
+
+	return `Progress [${chalk.blue(archiveIcon).repeat(progress)}${otherIcon.repeat(20 - progress)}] ${percent}% | ${archive}/${total}`;
 };
 
 exports.progressBar = progressBar;
