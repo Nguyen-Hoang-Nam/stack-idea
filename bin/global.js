@@ -22,10 +22,20 @@ exports.minimistConfig = {
 	}
 };
 
-exports.tableConfig = {
-	head: [chalk.blue('Stack'), chalk.blue('Tech'), chalk.blue('Tick')],
-	colAligns: ['left', 'left', 'center'],
-	style: {compact: true, 'padding-left': 1, head: [], border: []}
+exports.tableConfig = args => {
+	const head = [chalk.blue('Stack'), chalk.blue('Tech'), chalk.blue('Tick')];
+	const colAligns = ['left', 'left', 'center'];
+
+	if (args['line-number']) {
+		head.unshift(chalk.blue('No'));
+		colAligns.unshift('center');
+	}
+
+	return {
+		head,
+		colAligns,
+		style: {compact: true, 'padding-left': 1, head: [], border: []}
+	};
 };
 
 exports.fuseConfig = {
@@ -74,7 +84,8 @@ exports.manipulateStackConfig = [
 	'hide-row',
 	'show-row',
 	'get-all',
-	'get-hidden'
+	'get-hidden',
+	'show-all'
 ];
 
 exports.manipulateStack = [

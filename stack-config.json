@@ -125,8 +125,5 @@
     'Apache',
     'Caddy',
   ],
-  Hidden: [
-    'JS Framework',
-    'Server',
-  ],
+  Hidden: [],
 }

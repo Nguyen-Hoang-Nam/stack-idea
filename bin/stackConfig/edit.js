@@ -253,6 +253,12 @@ exports.showRow = showRow;
 
 const getHiddenRow = config => config.Hidden;
 
+const showAllRow = config => {
+	config.Hidden = [];
+
+	return config;
+};
+
 /**
  * Print confi to screen.
  *
@@ -286,6 +292,8 @@ exports.editCommand = (config, args) => {
 	} else if (args['get-hidden']) {
 		const hidden = getHiddenRow(config);
 		console.log(hidden);
+	} else if (args['show-all']) {
+		showAllRow(config);
 	}
 
 	return config;

@@ -3,5 +3,6 @@
 
 npm test
 genversion --semi bin/version.js
+stack --show-all
 cat /dev/null > .stackfile
 cat /dev/null > .stackconfigfile

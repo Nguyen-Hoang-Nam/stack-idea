@@ -48,7 +48,7 @@ if (args.generate) {
 					}
 				});
 		} else if (args['get-state']) {
-			editStack.getState(stack, args['get-state'])
+			editStack.getState(stack, args)
 				.then(table => {
 					console.log(table.toString());
 				});

@@ -6,8 +6,6 @@ const utils = require('../utils');
 const search = require('../search');
 const prompt = require('../prompt');
 
-const table = new Table(global.tableConfig);
-
 /**
  * Tick item.
  *
@@ -163,7 +161,7 @@ const createRow = (stackName, techName, tick) => {
 	techName = chalk.keyword(rowColor)(techName);
 	tick = utils.tickSymbolByState(tick);
 
-	return {[stackName]: [techName, tick]};
+	return [stackName, techName, tick];
 };
 
 /**
@@ -183,6 +181,26 @@ const sortRows = (rows, args) => {
 	return rows;
 };
 
+const showTableOptions = (tick, techName, args) => {
+	if (args.all) {
+		return true;
+	}
+
+	if (args['only-tick'] && tick === 'tick') {
+		return true;
+	}
+
+	if (args['only-untick'] && tick === 'untick') {
+		return true;
+	}
+
+	if (!args['only-tick'] && !args['only-untick'] && tick !== 'remove' && techName !== 'None') {
+		return true;
+	}
+
+	return false;
+};
+
 /**
  * Display stack as table.
  *
@@ -198,7 +216,7 @@ exports.showTable = (stack, args) => {
 			const techName = property.Name;
 			const tick = property.Tick;
 
-			if (args.all || (tick !== 'remove' && techName !== 'None')) {
+			if (showTableOptions(tick, techName, args)) {
 				const row = createRow(stackName, techName, tick);
 				rows.push(row);
 			}
@@ -209,8 +227,15 @@ exports.showTable = (stack, args) => {
 		rows = sortRows(rows, args);
 	}
 
-	for (const element of rows) {
-		table.push(element);
+	const table = new Table(global.tableConfig(args));
+	let count = 1;
+	for (const tableLine of rows) {
+		if (args['line-number']) {
+			tableLine.unshift(count);
+			count++;
+		}
+
+		table.push(tableLine);
 	}
 
 	return table;
@@ -223,8 +248,9 @@ exports.showTable = (stack, args) => {
  * @param {string} row - Name of stack
  * @return {Object}
  */
-exports.getState = async (stack, rows) => {
+exports.getState = async (stack, args) => {
 	let result = [];
+	let rows = args['get-state'];
 	const rowType = utils.checkEmpty(rows);
 
 	if (rowType) {
@@ -268,10 +294,17 @@ exports.getState = async (stack, rows) => {
 	}
 
 	result = [...new Set(result)];
+	const table = new Table(global.tableConfig(args));
+	let count = 1;
 	for (const line of result) {
-		table.push({
-			[line]: [stack[line].Name, utils.tickSymbolByState(stack[line].Tick)]
-		});
+		const tableLine = [line, stack[line].Name, utils.tickSymbolByState(stack[line].Tick)];
+
+		if (args['line-number']) {
+			tableLine.unshift(count);
+			count++;
+		}
+
+		table.push(tableLine);
 	}
 
 	return table;
